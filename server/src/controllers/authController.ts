@@ -39,7 +39,7 @@ export const login = async (req: Request, res: Response) => {
         return res.status(401).json({ message: 'Invalid username or password' });
     }
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
 
     res.json({ message: "Login successful", token, user: { id: user.id, username: user.username } });
 }
