@@ -38,9 +38,14 @@ export default function Dashboard() {
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h4">Welcome back, {user?.username || "USERNAME"}!</Typography>
-          <Button variant="contained" color="error" onClick={handleLogout}>
-            Logout
-          </Button>
+          <Box display="flex" gap={2}>
+            <Button variant="outlined" onClick={() => navigate('/leaderboard')}>
+              Leaderboard
+            </Button>
+            <Button variant="contained" color="error" onClick={handleLogout}>
+              Logout
+            </Button>
+          </Box>
         </Box>
         <Typography sx={{ mt: 2 }} color="text.secondary">
           TODO - tasks and groups!
