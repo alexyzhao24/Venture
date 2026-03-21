@@ -11,3 +11,6 @@ server/dist/
 # System files
 .DS_Store
 Thumbs.db
+
+# Prisma generated
+server/src/generated
