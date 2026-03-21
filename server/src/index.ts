@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRouter from './routes/authRoutes.js';
 import leaderboardRouter from './routes/leaderboard.js';
+import tasksRouter from './routes/tasks.js';
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/auth', authRouter)
 app.use('/api/leaderboard', leaderboardRouter);
+app.use('/api/tasks', tasksRouter);
 
 // Basic health check route
 app.get('/', (req: Request, res: Response) => {

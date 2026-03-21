@@ -45,6 +45,9 @@ export default function Dashboard() {
             <Button variant="contained" color="error" onClick={handleLogout}>
               Logout
             </Button>
+            <Button variant="outlined" onClick={() => navigate('/tasks')}>
+              Tasks
+            </Button>
           </Box>
         </Box>
         <Typography sx={{ mt: 2 }} color="text.secondary">

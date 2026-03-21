@@ -3,6 +3,7 @@ import Login from './pages/Login';
 import Register from "./pages/Register"
 import Dashboard from './pages/Dashboard';
 import Leaderboard from './pages/Leaderboard';
+import Tasks from './pages/Tasks';
 import './App.css'
 
 function App() {
@@ -30,6 +31,10 @@ function App() {
         <Route 
           path="*" 
           element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
+
+        <Route
+          path="/tasks"
+          element={isAuthenticated ? <Tasks /> : <Navigate to="/login" />} />
           
       </Routes>
     </BrowserRouter>
