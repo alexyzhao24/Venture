@@ -24,4 +24,5 @@ authRouter.get('/me', verifyToken, async(req: any, res: any)=> {
     res.json(user);
 })
 
+
 export default authRouter;

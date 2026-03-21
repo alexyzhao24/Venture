@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from "./pages/Register"
 import Dashboard from './pages/Dashboard';
+import Leaderboard from './pages/Leaderboard';
 import './App.css'
 
 function App() {
@@ -10,16 +11,26 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route 
+          path="/login" 
+          element={<Login />} />
 
-        <Route path="/register" element={<Register />} />
+        <Route 
+          path="/register" 
+          element={<Register />} />
         
         <Route 
           path="/dashboard" 
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
-        />
+          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
 
-        <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
+        <Route 
+          path="/leaderboard"
+          element={isAuthenticated ? <Leaderboard /> : <Navigate to="/login" />} />
+
+        <Route 
+          path="*" 
+          element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
+          
       </Routes>
     </BrowserRouter>
   );
