@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container, Paper, Typography, Box, Table, TableBody, TableCell, TableHead, TableRow, Button } from '@mui/material';
+import { Container, Paper, Typography, Box, Table, TableBody, TableCell, TableHead, TableRow, Button, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
@@ -33,7 +33,7 @@ export default function Leaderboard() {
 
   const medals = ['🥇', '🥈', '🥉'];
 
-  if (loading) return <Typography>Loading Leaderboard...</Typography>;
+  if (loading) return <CircularProgress />;
 
   return (
     <Container maxWidth="md" sx={{ mt: 8 }}>

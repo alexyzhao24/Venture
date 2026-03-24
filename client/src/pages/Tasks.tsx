@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container, Paper, Typography, Box, Button, Chip } from '@mui/material';
+import { Container, Paper, Typography, Box, Button, Chip, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
@@ -30,7 +30,7 @@ export default function Tasks() {
   }, []);
 
   if(loading) 
-    return <Typography>Loading Tasks...</Typography>;
+    return <CircularProgress />;
 
   return (
     <Container maxWidth="md" sx={{ mt: 8 }}>

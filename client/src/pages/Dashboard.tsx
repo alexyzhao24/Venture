@@ -1,4 +1,4 @@
-import { Container, Typography, Button, Paper, Box } from '@mui/material';
+import { Container, Typography, Button, Paper, Box, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../api/axios'
@@ -31,7 +31,7 @@ export default function Dashboard() {
     navigate('/login');
   };
 
-  if (loading) return <Typography>Loading Venture...</Typography>;
+  if (loading) return <CircularProgress />;
 
   return (
     <Container maxWidth="md" sx={{ mt: 8 }}>

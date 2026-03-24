@@ -58,7 +58,7 @@ function App() {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2, bgcolor: '#1976d2' }}
+              sx={{ mt: 3, mb: 2 }}
             >
               Sign In
             </Button>
