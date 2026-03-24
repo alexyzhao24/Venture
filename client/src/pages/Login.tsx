@@ -18,11 +18,8 @@ function App() {
       });
 
       const { token } = response.data;
-      localStorage.setItem('token', token);
-
-      localStorage.setItem('token', token);
-      localStorage.setItem('username', response.data.user.username);
-      navigate('/dashboard');
+      await localStorage.setItem('token', token);
+      navigate('*');
     }catch (err) {
         alert("Login failed.")
     }
