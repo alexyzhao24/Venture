@@ -1,6 +1,7 @@
 @baseUrl=http://localhost:5000/api/auth
 
 ### Register
+# Should return 201.
 POST {{baseUrl}}/register
 Content-Type: application/json
 
@@ -10,7 +11,9 @@ Content-Type: application/json
     "email": "test@test.com"
 }
 
-### Login
+### Login after Registering
+# Should return JWT token.
+# @name login
 POST {{baseUrl}}/login
 Content-Type: application/json
 
@@ -18,3 +21,40 @@ Content-Type: application/json
     "username": "test",
     "password": "testPass12!"
 }
+
+### Login with Bad Password
+# Should return 401.
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+    "username": "test",
+    "password": "testPass121"
+}
+
+### Login with Bad User
+# Should return 401.
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+    "username": "nottest",
+    "password": "testPass12!"
+}
+
+### Get unauthorized user data
+# Should return 401.
+GET {{baseUrl}}/me
+Content-Type: application/json
+
+{
+    "id": "1"
+}
+
+#### Get Authorization Token from login
+@authToken = {{login.response.body.token}}
+
+### Get authorized user data
+# Should return info json
+GET {{baseUrl}}/me
+Authorization: Bearer {{authToken}}
