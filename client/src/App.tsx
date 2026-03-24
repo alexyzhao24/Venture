@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Leaderboard from './pages/Leaderboard';
 import Tasks from './pages/Tasks';
 import './App.css'
+import MainView from './components/MainView';
 
 function App() {
   const isAuthenticated = !!localStorage.getItem('token');
@@ -36,32 +37,18 @@ function App() {
   return (
     <BrowserRouter>
       <ThemeProvider theme={themeOptions}>
-      <Routes>
-        <Route 
-          path="/login" 
-          element={<Login />} />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-        <Route 
-          path="/register" 
-          element={<Register />} />
-        
-        <Route 
-          path="/dashboard" 
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
+          <Route element={isAuthenticated ? <MainView /> : <Navigate to="/login" />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/tasks" element={<Tasks />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+          </Route>
 
-        <Route 
-          path="/leaderboard"
-          element={isAuthenticated ? <Leaderboard /> : <Navigate to="/login" />} />
-
-        <Route 
-          path="*" 
-          element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
-
-        <Route
-          path="/tasks"
-          element={isAuthenticated ? <Tasks /> : <Navigate to="/login" />} />
-          
-      </Routes>
+          <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
+        </Routes>
       </ThemeProvider>
     </BrowserRouter>
   );

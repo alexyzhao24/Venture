@@ -33,13 +33,10 @@ export default function Tasks() {
     return <CircularProgress />;
 
   return (
-    <Container maxWidth="md" sx={{ mt: 8 }}>
+    <Container maxWidth="md">
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h4">Tasks</Typography>
-          <Button variant="outlined" onClick={() => navigate('/dashboard')}>
-            Back to Dashboard
-          </Button>
         </Box>
         {tasks.map(task => (
           <Paper key={task.id} elevation={1} sx={{ p: 2, mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

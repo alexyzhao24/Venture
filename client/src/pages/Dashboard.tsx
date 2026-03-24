@@ -34,21 +34,10 @@ export default function Dashboard() {
   if (loading) return <CircularProgress />;
 
   return (
-    <Container maxWidth="md" sx={{ mt: 8 }}>
+    <Container maxWidth="md">
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h4">Welcome back, {user?.username || "USERNAME"}!</Typography>
-          <Box display="flex" gap={2}>
-            <Button variant="outlined" onClick={() => navigate('/leaderboard')}>
-              Leaderboard
-            </Button>
-            <Button variant="contained" color="error" onClick={handleLogout}>
-              Logout
-            </Button>
-            <Button variant="outlined" onClick={() => navigate('/tasks')}>
-              Tasks
-            </Button>
-          </Box>
         </Box>
         <Typography sx={{ mt: 2 }} color="text.secondary">
           TODO - tasks and groups!

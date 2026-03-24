@@ -36,13 +36,10 @@ export default function Leaderboard() {
   if (loading) return <CircularProgress />;
 
   return (
-    <Container maxWidth="md" sx={{ mt: 8 }}>
+    <Container maxWidth="md">
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h4">Leaderboard</Typography>
-          <Button variant="outlined" onClick={() => navigate('/dashboard')}>
-            Back to Dashboard
-          </Button>
         </Box>
         <Table>
           <TableHead>
