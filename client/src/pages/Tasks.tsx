@@ -33,8 +33,8 @@ export default function Tasks() {
     return <CircularProgress />;
 
   return (
-    <Container maxWidth="md">
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+    <Container maxWidth="md" sx={{ mt: 8 }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 2, maxHeight: '80vh', overflow: 'auto' }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h4">Tasks</Typography>
         </Box>
