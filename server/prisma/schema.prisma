@@ -18,8 +18,7 @@ model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   username  String   @unique
-  password  String   
-  tasks     Task[]   
+  password  String
   createdAt DateTime @default(now())
 }
 
@@ -27,7 +26,5 @@ model Task {
   id          Int      @id @default(autoincrement())
   title       String
   description String?
-  completed   Boolean  @default(false)
-  author      User     @relation(fields: [authorId], references: [id])
-  authorId    Int
+  points      Int      @default(1)
 }
