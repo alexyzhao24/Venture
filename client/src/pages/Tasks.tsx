@@ -40,7 +40,7 @@ export default function Tasks() {
         </Box>
         {tasks.map(task => (
           <Paper key={task.id} elevation={1} sx={{ p: 2, mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box>
+            <Box sx={{ textAlign: 'left', width: '100%' }}>
               <Typography fontWeight="bold">{task.title}</Typography>
               <Typography variant="body2" color="text.secondary">{task.description}</Typography>
             </Box>

@@ -9,7 +9,9 @@ import './App.css'
 import MainView from './components/MainView';
 
 function App() {
-  const isAuthenticated = !!localStorage.getItem('token');
+  // const isAuthenticated = !!localStorage.getItem('token'); 
+  const isAuthenticated = true; //only to be used for testing purposes, switch this back later
+
 
   const themeOptions = createTheme({
     palette: {
