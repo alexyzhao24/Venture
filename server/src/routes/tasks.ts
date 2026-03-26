@@ -1,11 +1,14 @@
 import { Router } from 'express';
 import prisma from '../lib/prisma.js';
+import { verifyToken } from '../middleware/auth.js';
 
 const router = Router();
 
-router.get('/', async (requestAnimationFrame, res) => {
+router.get('/', verifyToken, async (req: any, res: any) => {
     try {
-        const tasks = await prisma.task.findMany();
+        const tasks = await prisma.task.findMany({
+            where: { authorId: req.user.id },
+        });
         res.json(tasks);
     } catch (err) {
         res.status(500).json({message: 'Internal server error'});
@@ -14,10 +17,11 @@ router.get('/', async (requestAnimationFrame, res) => {
 
 router.post('/', async (req, res) => {
     try {
-        const { title, description, points } = req.body; // Data from your frontend
+        const { authorId, title, description, points } = req.body; // Data from your frontend
         
         const newTask = await prisma.task.create({
             data: {
+                authorId,
                 title,
                 description,
                 points: parseInt(points, 10) // Saving it to the DB via Prisma

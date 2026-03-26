@@ -15,17 +15,32 @@ export default function TaskCreation() {
     const pointsNum = parseInt(points, 10);
 
     try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        alert("No authentication token found. Please log in.");
+        return;
+      }
+
+      const tokenresponse = await api.get('/auth/me');
+      const userData = await tokenresponse.data;
+
       if (isNaN(pointsNum) || pointsNum < 0) {
         alert("Points must be a valid non-negative number.");
         return;
       }
 
-      const response = await api.post('/tasks', {
+      await api.post('/tasks', {
+        authorId: userData.id,
         title,
         description,
         points: pointsNum
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
-       
+
       setTitle('');
       setDescription('');
       setPoints('');
@@ -33,7 +48,8 @@ export default function TaskCreation() {
       navigate('/TaskCreation'); 
 
     } catch (err) {
-      alert("Error creating task. Check Points value and try again.");
+      console.error(err);
+      alert("Error creating task. Check your connection or login status.");
     }
   };
 
