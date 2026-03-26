@@ -29,5 +29,6 @@ model Task {
   description String?
   points      Int      @default(1)
   author      User?    @relation(fields: [authorId], references: [id])
+  completed   Boolean  @default(false)
   authorId    Int?
 }
