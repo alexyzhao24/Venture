@@ -32,6 +32,7 @@ export default function MainLayout() {
         { text: 'Dashboard', icon: <DashIcon />, path: '/dashboard' },
         { text: 'My Tasks', icon: <TaskIcon />, path: '/tasks' },
         { text: 'Leaderboard', icon: <TrophyIcon />, path: '/leaderboard' },
+        { text: 'Add Task', icon: <AddIcon />, path: '/TaskCreation' },
     ];
 
     const handleLogout = () => {
@@ -60,17 +61,17 @@ export default function MainLayout() {
                     value={location.pathname}
                     onChange={(event, newValue) => navigate(newValue)}
                 >
-                    {menuItems.map((item) => (
+                    {menuItems.slice(0,3).map((item) => (
                         <BottomNavigationAction label={item.text} value={item.path} icon={item.icon} />
                     ))}
-
-                    <Box sx={{ position: 'fixed', bottom: 85, right: 16,}}>
-                        <Fab color="primary" aria-label="add" >
-                            <AddIcon />
-                        </Fab>
-                    </Box>
-
                 </BottomNavigation>
+
+                <Box sx={{ position: 'fixed', bottom: 85, right: 16,}}>
+                    <Fab color="primary" aria-label="add" onClick={() => navigate('/TaskCreation')}>
+                        <AddIcon />
+                    </Fab>
+                </Box>
+
             </Paper>
 
             <Drawer
@@ -111,15 +112,8 @@ export default function MainLayout() {
                         </ListItemButton>
                     </Box>
                 </Box>
-
-                <Box sx={{ position: 'fixed', bottom: 16, right: 16,}}>
-                    <Fab color="primary" aria-label="add" >
-                        <AddIcon />
-                    </Fab>
-                </Box>
             </Drawer>
 
-            
             <Box
                 component="main"
                 sx={{

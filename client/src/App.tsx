@@ -5,6 +5,7 @@ import Register from "./pages/Register"
 import Dashboard from './pages/Dashboard';
 import Leaderboard from './pages/Leaderboard';
 import Tasks from './pages/Tasks';
+import TaskCreation from './pages/TaskCreation';
 import './App.css'
 import MainView from './components/MainView';
 
@@ -47,6 +48,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/TaskCreation" element={<TaskCreation />} />
           </Route>
 
           <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
