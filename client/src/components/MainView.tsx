@@ -1,4 +1,5 @@
-import { Box, AppBar, Toolbar, Typography, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Avatar, IconButton, BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
+import { Box, AppBar, Toolbar, Typography, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Avatar, IconButton, BottomNavigation, BottomNavigationAction, Paper, Fab } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import { Dashboard as DashIcon, Checklist as TaskIcon, Leaderboard as TrophyIcon, Logout as LogoutIcon } from '@mui/icons-material';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -63,6 +64,12 @@ export default function MainLayout() {
                         <BottomNavigationAction label={item.text} value={item.path} icon={item.icon} />
                     ))}
 
+                    <Box sx={{ position: 'fixed', bottom: 85, right: 16,}}>
+                        <Fab color="primary" aria-label="add" >
+                            <AddIcon />
+                        </Fab>
+                    </Box>
+
                 </BottomNavigation>
             </Paper>
 
@@ -104,8 +111,15 @@ export default function MainLayout() {
                         </ListItemButton>
                     </Box>
                 </Box>
+
+                <Box sx={{ position: 'fixed', bottom: 16, right: 16,}}>
+                    <Fab color="primary" aria-label="add" >
+                        <AddIcon />
+                    </Fab>
+                </Box>
             </Drawer>
 
+            
             <Box
                 component="main"
                 sx={{
