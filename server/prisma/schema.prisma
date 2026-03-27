@@ -14,24 +14,35 @@ datasource db {
   provider = "postgresql"
 }
 
+model UserTask {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+  task        Task     @relation(fields: [taskId], references: [id])
+  taskId      Int
+  completedAt DateTime @default(now())
+}
+
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  username  String   @unique
-  password  String
-  tasks     Task[]
-  groups    Group[]
-  createdAt DateTime @default(now())
+  id          Int        @id @default(autoincrement())
+  email       String     @unique
+  username    String     @unique
+  password    String
+  tasks       Task[]
+  groups      Group[]
+  completions UserTask[]
+  createdAt   DateTime   @default(now())
 }
 
 model Task {
-  id          Int     @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   title       String
   description String?
-  points      Int     @default(1)
-  author      User?   @relation(fields: [authorId], references: [id])
-  completed   Boolean @default(false)
+  points      Int        @default(1)
+  author      User?      @relation(fields: [authorId], references: [id])
+  completed   Boolean    @default(false)
   authorId    Int?
+  completions UserTask[]
 }
 
 model Group {

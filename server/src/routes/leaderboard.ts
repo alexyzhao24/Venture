@@ -5,44 +5,26 @@ const router = Router();
 
 router.get('/:userids', async (req, res) => {
   try {
-    const { userids } = req.params;
-
-    if (!userids) return res.json([]);
-    
-    const idArray = userids.split(',')
-    .map(id => Number(id))
-    .filter(id => !isNaN(id));
-  
-    const scores = await prisma.user.findMany({
-      where:{ 
-        id: { 
-          in: idArray
-        } 
-      },
-      select: {
-        id: true,
-        username: true,
-        _count: {
-          select: {
-            tasks: {
-              where: { completed: true }
-            }
-          }
-        }
-      },
-      orderBy: {
-        tasks: {
-          _count: 'desc'
+    const userIds = req.params.userids.split(',').map(Number);
+    const users = await prisma.user.findMany({
+      where: { id: { in: userIds } },
+      include: {
+        completions: {
+          include: { task: true }
         }
       }
     });
 
+    const scores = users.map(user => ({
+      id: user.id,
+      username: user.username,
+      points: user.completions.reduce((sum, c) => sum + c.task.points, 0),
+      tasksCompleted: user.completions.length,
+    })).sort((a, b) => b.points - a.points);
     res.json(scores);
-  } catch (error) {
-    console.error('Leaderboard error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+  } catch (err) {
+      res.status(500).json({ message: 'Internal server error' });
   }
 });
-
 
 export default router;

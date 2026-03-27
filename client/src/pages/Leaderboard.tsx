@@ -7,9 +7,8 @@ import api from '../api/axios';
 interface LeaderboardEntry {
   id: number;
   username: string;
-  _count: {
-    tasks: number;
-  };
+  points: number;
+  tasksCompleted: number;
 }
 
 export default function Leaderboard() {
@@ -50,7 +49,7 @@ export default function Leaderboard() {
             <TableRow>
               <TableCell><strong>Rank</strong></TableCell>
               <TableCell><strong>User</strong></TableCell>
-              <TableCell align="right"><strong>Tasks Completed</strong></TableCell>
+              <TableCell align="right"><strong>Points</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -58,7 +57,7 @@ export default function Leaderboard() {
               <TableRow key={entry.id} sx={{ backgroundColor: i === 0 ? 'rgba(255, 215, 0, 0.08)' : 'inherit' }}>
                 <TableCell>{medals[i] ?? i + 1}</TableCell>
                 <TableCell>{entry.username}</TableCell>
-                <TableCell align="right">{entry._count.tasks}</TableCell>
+                <TableCell align="right">{entry.points} pts</TableCell>
               </TableRow>
             ))}
           </TableBody>
