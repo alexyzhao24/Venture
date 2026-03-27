@@ -1,6 +1,5 @@
 import { Box, AppBar, Toolbar, Typography, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Avatar, IconButton, BottomNavigation, BottomNavigationAction, Paper, Fab } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import { Dashboard as DashIcon, Checklist as TaskIcon, Leaderboard as TrophyIcon, Logout as LogoutIcon } from '@mui/icons-material';
+import { Dashboard as DashIcon, Checklist as TaskIcon, Leaderboard as TrophyIcon, Logout as LogoutIcon, Add as AddIcon, Group as GroupsIcon} from '@mui/icons-material';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
@@ -31,8 +30,9 @@ export default function MainLayout() {
     const menuItems = [
         { text: 'Dashboard', icon: <DashIcon />, path: '/dashboard' },
         { text: 'My Tasks', icon: <TaskIcon />, path: '/tasks' },
-        { text: 'Leaderboard', icon: <TrophyIcon />, path: '/leaderboard' },
+        { text: 'Venture Together', icon: <GroupsIcon />, path: '/GroupCreation' },
         { text: 'Add Task', icon: <AddIcon />, path: '/TaskCreation' },
+        { text: 'Leaderboard', icon: <TrophyIcon />, path: '/leaderboard' },
     ];
 
     const handleLogout = () => {

@@ -6,6 +6,8 @@ import Dashboard from './pages/Dashboard';
 import Leaderboard from './pages/Leaderboard';
 import Tasks from './pages/Tasks';
 import TaskCreation from './pages/TaskCreation';
+import GroupCreation from './pages/GroupCreation';
+import ViewGroups from './pages/ViewGroups';
 import './App.css'
 import MainView from './components/MainView';
 
@@ -49,6 +51,8 @@ function App() {
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/TaskCreation" element={<TaskCreation />} />
+            <Route path="/GroupCreation" element={<GroupCreation />} />
+            <Route path="/ViewGroups" element={<ViewGroups />} />
           </Route>
 
           <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />

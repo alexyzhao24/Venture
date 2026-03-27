@@ -8,6 +8,7 @@ router.get('/', verifyToken, async (req: any, res: any) => {
     try {
         const tasks = await prisma.task.findMany({
             where: { authorId: req.user.id || null},
+            orderBy: { points: 'asc' }
         });
         res.json(tasks);
     } catch (err) {

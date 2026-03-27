@@ -5,9 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
-  output = "../src/generated/"
+  output          = "../src/generated/"
 }
 
 datasource db {
@@ -20,15 +20,24 @@ model User {
   username  String   @unique
   password  String
   tasks     Task[]
+  groups    Group[]
   createdAt DateTime @default(now())
 }
 
 model Task {
-  id          Int      @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   title       String
   description String?
-  points      Int      @default(1)
-  author      User?    @relation(fields: [authorId], references: [id])
-  completed   Boolean  @default(false)
+  points      Int     @default(1)
+  author      User?   @relation(fields: [authorId], references: [id])
+  completed   Boolean @default(false)
   authorId    Int?
+}
+
+model Group {
+  id    Int    @id @default(autoincrement())
+  title String @default("New Group")
+  allnames String
+  userids Int[]
+  users   User[]
 }
