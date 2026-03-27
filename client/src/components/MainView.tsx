@@ -30,7 +30,7 @@ export default function MainLayout() {
     const menuItems = [
         { text: 'Dashboard', icon: <DashIcon />, path: '/dashboard' },
         { text: 'My Tasks', icon: <TaskIcon />, path: '/tasks' },
-        { text: 'Venture Together', icon: <GroupsIcon />, path: '/GroupCreation' },
+        { text: 'Venture Together', icon: <GroupsIcon />, path: '/ViewGroups' },
         { text: 'Add Task', icon: <AddIcon />, path: '/TaskCreation' },
     ];
 
