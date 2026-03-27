@@ -3,9 +3,22 @@ import prisma from '../lib/prisma.js';
 
 const router = Router();
 
-router.get('/', async (req, res) => {
+router.get('/:userids', async (req, res) => {
   try {
+    const { userids } = req.params;
+
+    if (!userids) return res.json([]);
+    
+    const idArray = userids.split(',')
+    .map(id => Number(id))
+    .filter(id => !isNaN(id));
+  
     const scores = await prisma.user.findMany({
+      where:{ 
+        id: { 
+          in: idArray
+        } 
+      },
       select: {
         id: true,
         username: true,
@@ -23,6 +36,7 @@ router.get('/', async (req, res) => {
         }
       }
     });
+
     res.json(scores);
   } catch (error) {
     console.error('Leaderboard error:', error);

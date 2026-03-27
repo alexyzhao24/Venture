@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Container, Paper, Typography, Box, Table, TableBody, TableCell, TableHead, TableRow, Button, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import api from '../api/axios';
 
 interface LeaderboardEntry {
@@ -12,6 +13,9 @@ interface LeaderboardEntry {
 }
 
 export default function Leaderboard() {
+  const { userids } = useParams();
+  const location = useLocation();
+  const groupTitle = location.state?.groupTitle || "Group";
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -19,7 +23,7 @@ export default function Leaderboard() {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const response = await api.get('/leaderboard');
+        const response = await api.get(`/leaderboard/${userids}`);
         setEntries(response.data);
       } catch (err) {
         console.error('Failed to fetch leaderboard');
@@ -28,8 +32,8 @@ export default function Leaderboard() {
       }
     };
 
-    fetchLeaderboard();
-  }, []);
+  if (userids) fetchLeaderboard();
+  }, [userids]);
 
   const medals = ['🥇', '🥈', '🥉'];
 
@@ -39,7 +43,7 @@ export default function Leaderboard() {
     <Container maxWidth="md">
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h4">Leaderboard</Typography>
+          <Typography variant="h4">{groupTitle} Leaderboard</Typography>
         </Box>
         <Table>
           <TableHead>

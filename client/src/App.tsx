@@ -49,7 +49,7 @@ function App() {
           <Route element={isAuthenticated ? <MainView /> : <Navigate to="/login" />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/tasks" element={<Tasks />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/leaderboard/:userids" element={<Leaderboard />} />
             <Route path="/TaskCreation" element={<TaskCreation />} />
             <Route path="/GroupCreation" element={<GroupCreation />} />
             <Route path="/ViewGroups" element={<ViewGroups />} />

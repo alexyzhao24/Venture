@@ -35,12 +35,25 @@ export default function ViewGroups() {
           </Fab>
         </Box>
             {groups.map(group => (
-                <Paper key={group.id} elevation={1} sx={{ p: 2, mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Box sx={{ textAlign: 'left', width: '100%' }}>
+                <Paper 
+                    onClick={() => {
+                    const ids = group.userids?.length ? group.userids.join(',') : '';
+                    if (ids) {
+                      navigate(`/leaderboard/${ids}`, { 
+                        state: { groupTitle: group.title } // This "carries" the title hiddenly
+                      });
+                    }
+                  }}
+                style={{ cursor: 'pointer' }}
+                key={group.id} 
+                elevation={1} 
+                sx={{ p: 2, mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                
+                <Box sx={{ textAlign: 'left', width: '100%' }} >
                     <Typography variant="h6" >{"Group: " + group.title}</Typography>
-
                     <Typography variant="body2" color="text.secondary">{group.allnames}</Typography>
                 </Box>
+
                 </Paper>
             ))}
       </Paper>

@@ -32,7 +32,6 @@ export default function MainLayout() {
         { text: 'My Tasks', icon: <TaskIcon />, path: '/tasks' },
         { text: 'Venture Together', icon: <GroupsIcon />, path: '/GroupCreation' },
         { text: 'Add Task', icon: <AddIcon />, path: '/TaskCreation' },
-        { text: 'Leaderboard', icon: <TrophyIcon />, path: '/leaderboard' },
     ];
 
     const handleLogout = () => {
