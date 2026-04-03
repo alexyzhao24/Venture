@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container, Paper, Typography, Box, Button, Chip, CircularProgress } from '@mui/material';
+import { Container, Paper, Typography, Box, Button, Chip, CircularProgress, Stack } from '@mui/material';
 import api from '../api/axios';
 
 
@@ -42,21 +42,54 @@ export default function Tasks() {
             <Typography variant="h4">Tasks</Typography>
           </Box>
           {tasks.map(task => (
-            <Paper key={task.id} elevation={1} sx={{ p: 2, mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Box sx={{ textAlign: 'left', width: '100%' }}>
-                <Typography fontWeight="bold">{task.title}</Typography>
-                <Typography variant="body2" color="text.secondary">{task.description}</Typography>
+            <Paper 
+              key={task.id} 
+              elevation={1} 
+              sx={{ p: 2, mb: 2 }}
+            >
+              <Box 
+                sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'flex-start', 
+                  gap: 2,
+                  mb: 2
+                }}
+              >
+                <Box sx={{ minWidth: 0, flex: 1 , textAlign: 'left', mb: -2}}>
+                  <Typography 
+                    sx={{ overflowWrap: 'break-word', wordBreak: 'break-word' }} 
+                    fontWeight="bold"
+                  >
+                    {task.title}
+                  </Typography>
+                  
+                  <Typography 
+                    sx={{ overflowWrap: 'break-word', wordBreak: 'break-word' }} 
+                    variant="body2" 
+                    color="text.secondary"
+                  >
+                    {task.description}
+                  </Typography>
+                </Box>
+
+                <Chip 
+                  label={`${task.points} pts`} 
+                  color={pointsColor(task.points)} 
+                  sx={{ flexShrink: 0 }}
+                />
               </Box>
-              <Box display="flex" alignItems="center" gap={2}>
-                <Chip label={`${task.points} pts`} color={pointsColor(task.points)} />
+
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Button
                   variant={task.completed ? 'outlined' : 'contained'}
                   disabled={task.completed}
                   onClick={() => completeTask(task.id)}
                   size="small"
+                  sx={{ mt: 0, width: '200px' }}
                 >
                   {task.completed ? 'Done ✓' : 'Complete'}
-                </Button>
+                </Button> 
               </Box>
             </Paper>
           ))}
