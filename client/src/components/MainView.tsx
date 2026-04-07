@@ -1,7 +1,9 @@
-import { Box, AppBar, Toolbar, Typography, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Avatar, IconButton, BottomNavigation, BottomNavigationAction, Paper, Fab } from '@mui/material';
+import { Box, AppBar, Toolbar, Typography, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Avatar, IconButton, BottomNavigation, BottomNavigationAction, Paper, Fab, Menu, MenuItem } from '@mui/material';
 import { Dashboard as DashIcon, Checklist as TaskIcon, Leaderboard as TrophyIcon, Logout as LogoutIcon, Add as AddIcon, Group as GroupsIcon} from '@mui/icons-material';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import api from '../api/axios';
 
 const drawerWidth = 240;
@@ -39,14 +41,47 @@ export default function MainLayout() {
         navigate('/login');
     };
 
+    
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    
+    const open = Boolean(anchorEl);
+
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     return (
         <Box sx={{ display: 'flex', minHeight: '100vh', overflow: 'hidden' }}>
             <AppBar position="fixed" elevation={0} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, bgcolor: 'white', color: 'text.primary' }}>
                 <Toolbar sx={{ justifyContent: 'space-between' }}>
-                    <Box component="img" src="/src/assets/venture-logo.svg" sx={{ height: '80px' }} />
+                    <Box component="img" src="/src/assets/venture-logo.svg" sx={{ height: '80px' }} onClick={() => navigate('/dashboard')} />
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>{user?.username}</Typography>
-                        <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}>J</Avatar>
+                        <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }} onClick={handleClick}></Avatar>
+                        <Menu
+                                id="long-menu"
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleClose}
+                                anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                                }}
+                                transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                                }}
+                            >
+                                
+                                <MenuItem onClick={() => { handleLogout(); handleClose(); }} sx={{ color: 'error.main' }}>
+                                <ListItemIcon><LogoutIcon fontSize="small" sx={{ color: 'error.main' }} /></ListItemIcon>
+                                <ListItemText>Logout</ListItemText>
+                                </MenuItem>
+                            </Menu>
                     </Box>
                 </Toolbar>
             </AppBar>

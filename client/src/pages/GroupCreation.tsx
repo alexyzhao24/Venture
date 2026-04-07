@@ -30,6 +30,13 @@ export default function GroupCreation() {
         });
 
       const userData = response.data;
+      const isDuplicate = usersids.includes(userData.id);
+
+      if (isDuplicate) {
+        alert("User already added to the group.");
+        return;
+      }
+      
       setUsers((prevUsers) => [...prevUsers, userData.id])
       setUsernamestring((prev) => prev ? `${prev}, ${username}` : username);
       setUsername('');

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Container, Paper, Typography, Box, Button, Chip, CircularProgress, Stack } from '@mui/material';
 import api from '../api/axios';
+import { useNavigate } from 'react-router-dom';
 
 
 interface Task {
@@ -22,6 +23,7 @@ const pointsColor = (points: number) => {
 export default function Tasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
       api.get('/tasks')
@@ -30,18 +32,22 @@ export default function Tasks() {
   }, []);
 
   const completeTask = async (taskId: number) => {
-      await api.post(`/tasks/${taskId}/complete`);
+      await api.patch(`/tasks/${taskId}/complete`);
       setTasks(tasks.map(t => t.id === taskId ? { ...t, completed: true } : t));
   };
 
-  if (loading) return <CircularProgress />;
-  return (
-    <Container maxWidth="md" sx={{ mt: 8 }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2, maxHeight: '80vh', overflow: 'auto' }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-            <Typography variant="h4">Tasks</Typography>
-          </Box>
-          {tasks.map(task => (
+  const determineDisplay = () => {
+      if (tasks.length === 0) {
+          return (          
+          <Button
+            onClick={() => navigate('/TaskCreation')}
+            fullWidth
+            variant="contained"
+          >
+            Add Task
+          </Button>);
+      }else{
+          return (tasks.map(task => (
             <Paper 
               key={task.id} 
               elevation={1} 
@@ -56,7 +62,7 @@ export default function Tasks() {
                   mb: 2
                 }}
               >
-                <Box sx={{ minWidth: 0, flex: 1 , textAlign: 'left', mb: -2}}>
+                <Box sx={{ minWidth: 0, flex: 1 , textAlign: 'left'}}>
                   <Typography 
                     sx={{ overflowWrap: 'break-word', wordBreak: 'break-word' }} 
                     fontWeight="bold"
@@ -92,7 +98,19 @@ export default function Tasks() {
                 </Button> 
               </Box>
             </Paper>
-          ))}
+          )))
+      }
+  };
+
+  if (loading) return <CircularProgress />;
+  return (
+    <Container maxWidth="md" sx={{ mt: 8 }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 2, maxHeight: '80vh', overflow: 'auto' }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+            <Typography variant="h4">Tasks</Typography>
+          </Box>
+          
+          {determineDisplay()}
         </Paper>
     </Container>
   );

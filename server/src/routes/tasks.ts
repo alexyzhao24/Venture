@@ -55,18 +55,23 @@ router.get('/group/:groupId', async (req, res) => {
     }
 });
 
-router.post('/:id/complete', verifyToken, async (req: any, res: any) => {
+router.patch('/:id/complete', verifyToken, async (req: any, res: any) => {
     try {
         const taskId = parseInt(req.params.id);
-        const completion = await prisma.userTask.create({
+
+        const updatedTask = await prisma.task.update({
+            where: {
+                id: taskId,
+            },
             data: {
-                userId: req.user.id,
-                taskId,
-            }
+                completed: true ,
+            },
         });
-        res.json({ message: 'Task completed!', completion });
+
+        res.json({ message: 'Task updated successfully', updatedTask });
     } catch (err) {
-        res.status(500).json({ message: 'Failed to complete task' });
+        console.error(err);
+        res.status(500).json({ message: 'Failed to update task' });
     }
 });
 

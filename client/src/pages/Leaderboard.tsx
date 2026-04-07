@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Container, Paper, Typography, Box, Table, TableBody, TableCell, TableHead, TableRow, Button, CircularProgress } from '@mui/material';
+import { Container, Paper, Typography, Box, Table, TableBody, TableCell, TableHead, TableRow, Button, CircularProgress, Fab } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useLocation, useParams } from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import api from '../api/axios';
 
 interface LeaderboardEntry {
@@ -43,6 +44,9 @@ export default function Leaderboard() {
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h4">{groupTitle} Leaderboard</Typography>
+          <Fab color="primary" aria-label="view" size="small" onClick={() => navigate('/ViewGroups')}>
+            <ArrowBackIcon />
+          </Fab>
         </Box>
         <Table>
           <TableHead>
