@@ -79,7 +79,7 @@ const handleCreateGroup = async (e: React.FormEvent) => {
     setUsernamestring(''); 
     setUsername('');
 
-    navigate('/GroupCreation');
+    navigate('/ViewGroups');
     
   } catch (err) {
     console.error(err);
