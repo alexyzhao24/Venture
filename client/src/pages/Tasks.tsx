@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Container, Paper, Typography, Box, Button, Chip, CircularProgress, Stack } from '@mui/material';
 import api from '../api/axios';
 import { useNavigate } from 'react-router-dom';
-
+import { useTaskContext } from '../context/TaskContext';
 
 interface Task {
   id: number;
@@ -24,6 +24,7 @@ export default function Tasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { refreshTasks } = useTaskContext();
 
   useEffect(() => {
       api.get('/tasks')
@@ -32,9 +33,10 @@ export default function Tasks() {
   }, []);
 
   const completeTask = async (taskId: number) => {
-      await api.patch(`/tasks/${taskId}/complete`);
-      setTasks(tasks.map(t => t.id === taskId ? { ...t, completed: true } : t));
-  };
+    await api.patch(`/tasks/${taskId}/complete`);
+    setTasks(tasks.map(t => t.id === taskId ? { ...t, completed: true } : t));
+    refreshTasks();
+};
 
   const determineDisplay = () => {
       if (tasks.length === 0) {
