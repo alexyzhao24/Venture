@@ -18,7 +18,7 @@ export default function ViewGroups() {
     
   useEffect(() => {
     api.get('/groups')
-      .then(res => setGroups(res.data))
+      .then(res => setGroups(res.data)) 
       .finally(() => setLoading(false));
   }, []);
 

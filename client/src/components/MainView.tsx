@@ -1,15 +1,17 @@
-import { Box, AppBar, Toolbar, Typography, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Avatar, IconButton, BottomNavigation, BottomNavigationAction, Paper, Fab, Menu, MenuItem } from '@mui/material';
-import { Dashboard as DashIcon, Checklist as TaskIcon, Leaderboard as TrophyIcon, Logout as LogoutIcon, Add as AddIcon, Group as GroupsIcon} from '@mui/icons-material';
+import { Box, AppBar, Toolbar, Typography, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Avatar, IconButton, BottomNavigation, BottomNavigationAction, Paper, Fab, Menu, MenuItem, Badge, Divider } from '@mui/material';
+import { Dashboard as DashIcon, Checklist as TaskIcon, Logout as LogoutIcon, Add as AddIcon, Group as GroupsIcon, NotificationsNone as BellIcon } from '@mui/icons-material';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import api from '../api/axios';
+import { useTaskContext } from '../context/TaskContext';
 
 const drawerWidth = 240;
 
 export default function MainLayout() {
     const [user, setUser] = useState<{ username: string } | null>(null);
+    const { incompleteTasks } = useTaskContext();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -22,10 +24,9 @@ export default function MainLayout() {
                 setUser(response.data);
             } catch (err) {
                 console.error("Session expired or invalid");
-                navigate('/login')
+                navigate('/login');
             }
         };
-
         fetchUser();
     }, []);
 
@@ -41,18 +42,15 @@ export default function MainLayout() {
         navigate('/login');
     };
 
-    
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    
+    const [bellAnchorEl, setBellAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
+    const bellOpen = Boolean(bellAnchorEl);
 
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
+    const handleClose = () => setAnchorEl(null);
+    const handleBellClick = (event: React.MouseEvent<HTMLElement>) => setBellAnchorEl(event.currentTarget);
+    const handleBellClose = () => setBellAnchorEl(null);
 
     return (
         <Box sx={{ display: 'flex', minHeight: '100vh', overflow: 'hidden' }}>
@@ -60,28 +58,50 @@ export default function MainLayout() {
                 <Toolbar sx={{ justifyContent: 'space-between' }}>
                     <Box component="img" src="/src/assets/venture-logo.svg" sx={{ height: '80px' }} onClick={() => navigate('/dashboard')} />
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>{user?.username}</Typography>
-                        <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }} onClick={handleClick}></Avatar>
+                        <IconButton onClick={handleBellClick}>
+                            <Badge badgeContent={incompleteTasks.length} color="error">
+                                <BellIcon />
+                            </Badge>
+                        </IconButton>
                         <Menu
-                                id="long-menu"
-                                anchorEl={anchorEl}
-                                open={open}
-                                onClose={handleClose}
-                                anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                                }}
-                                transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                                }}
-                            >
-                                
-                                <MenuItem onClick={() => { handleLogout(); handleClose(); }} sx={{ color: 'error.main' }}>
+                            anchorEl={bellAnchorEl}
+                            open={bellOpen}
+                            onClose={handleBellClose}
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                            PaperProps={{ sx: { width: 280, maxHeight: 400, overflow: 'auto' } }}
+                        >
+                            <MenuItem disabled>
+                                <Typography variant="body2" fontWeight={600}>Incomplete Tasks</Typography>
+                            </MenuItem>
+                            <Divider />
+                            {incompleteTasks.length === 0 ? (
+                                <MenuItem disabled>
+                                    <Typography variant="body2" color="text.secondary">All tasks complete! 🎉</Typography>
+                                </MenuItem>
+                            ) : (
+                                incompleteTasks.map(task => (
+                                    <MenuItem key={task.id} onClick={() => { navigate('/tasks'); handleBellClose(); }}>
+                                        <Typography variant="body2">📋 {task.title}</Typography>
+                                    </MenuItem>
+                                ))
+                            )}
+                        </Menu>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>{user?.username}</Typography>
+                        <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }} onClick={handleClick} />
+                        <Menu
+                            id="long-menu"
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        >
+                            <MenuItem onClick={() => { handleLogout(); handleClose(); }} sx={{ color: 'error.main' }}>
                                 <ListItemIcon><LogoutIcon fontSize="small" sx={{ color: 'error.main' }} /></ListItemIcon>
                                 <ListItemText>Logout</ListItemText>
-                                </MenuItem>
-                            </Menu>
+                            </MenuItem>
+                        </Menu>
                     </Box>
                 </Toolbar>
             </AppBar>
@@ -95,17 +115,15 @@ export default function MainLayout() {
                     value={location.pathname}
                     onChange={(event, newValue) => navigate(newValue)}
                 >
-                    {menuItems.slice(0,3).map((item) => (
-                        <BottomNavigationAction label={item.text} value={item.path} icon={item.icon} />
+                    {menuItems.slice(0, 3).map((item) => (
+                        <BottomNavigationAction key={item.text} label={item.text} value={item.path} icon={item.icon} />
                     ))}
                 </BottomNavigation>
-
-                <Box sx={{ position: 'fixed', bottom: 85, right: 16,}}>
+                <Box sx={{ position: 'fixed', bottom: 85, right: 16 }}>
                     <Fab color="primary" aria-label="add" onClick={() => navigate('/TaskCreation')}>
                         <AddIcon />
                     </Fab>
                 </Box>
-
             </Paper>
 
             <Drawer
@@ -125,10 +143,7 @@ export default function MainLayout() {
                                 <ListItemButton
                                     onClick={() => navigate(item.path)}
                                     selected={location.pathname === item.path}
-                                    sx={{
-                                        borderRadius: 3,
-                                        '&.Mui-selected': { bgcolor: 'primary.light', color: 'white' }
-                                    }}
+                                    sx={{ borderRadius: 3, '&.Mui-selected': { bgcolor: 'primary.light', color: 'white' } }}
                                 >
                                     <ListItemIcon sx={{ color: location.pathname === item.path ? 'white' : 'inherit' }}>
                                         {item.icon}
@@ -138,7 +153,6 @@ export default function MainLayout() {
                             </ListItem>
                         ))}
                     </List>
-
                     <Box sx={{ position: 'absolute', bottom: 20, left: 16, right: 16 }}>
                         <ListItemButton onClick={handleLogout} sx={{ borderRadius: 3, color: 'error.main' }}>
                             <ListItemIcon><LogoutIcon color="error" /></ListItemIcon>
@@ -159,7 +173,8 @@ export default function MainLayout() {
                     justifyContent: 'center',
                     p: 4,
                     overflowY: 'auto',
-                }}>
+                }}
+            >
                 <Outlet />
             </Box>
         </Box>
