@@ -3,17 +3,21 @@ import prisma from '../lib/prisma.js';
 
 const router = Router();
 
-router.get('/:userids', async (req, res) => {
+router.get('/:userids/:timeframe', async (req, res) => {
   try {
     const userIds = req.params.userids.split(',').map(Number);
+    const timeframeDate = new Date(req.params.timeframe);
+    const timeframe = req.params.timeframe;
     const users = await prisma.user.findMany({
       where: { id: { in: userIds } },
       include: {
         completions: {
-          include: { task: true }
-        }
-      }
+          where: { completedAt: { gte: timeframeDate } },
+          include: { task: true}
+      }}
     });
+
+    console.log(timeframe);
 
     const scores = users.map(user => ({
       id: user.id,

@@ -29,7 +29,8 @@ router.post('/', async (req, res) => {
             data: {
                 title,
                 userids, // Assuming you want to create a group with the provided users
-                allnames // Include the allnames field in the group creation
+                allnames, // Include the allnames field in the group creation
+                createdAt: new Date(Date.now()) // Set the creation date to now
             }
         });
 

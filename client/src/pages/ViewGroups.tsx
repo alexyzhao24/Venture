@@ -9,6 +9,7 @@ interface Group {
     title: string;
     userids: number[] | null;
     allnames: string | null;
+    createdAt: Date;
 }
 
 export default function ViewGroups() {
@@ -41,7 +42,7 @@ export default function ViewGroups() {
                     onClick={() => {
                     const ids = group.userids?.length ? group.userids.join(',') : '';
                     if (ids) {
-                      navigate(`/leaderboard/${ids}`, { 
+                      navigate(`/leaderboard/${ids}/${group.createdAt}`, { 
                         state: { groupTitle: group.title } // This "carries" the title hiddenly
                       });
                     }

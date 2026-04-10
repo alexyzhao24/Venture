@@ -59,4 +59,5 @@ model Group {
   allnames String
   userids Int[]
   users   User[]
+  createdAt   DateTime?
 }

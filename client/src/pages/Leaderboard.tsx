@@ -13,7 +13,7 @@ interface LeaderboardEntry {
 }
 
 export default function Leaderboard() {
-  const { userids } = useParams();
+  const { userids, timeframe } = useParams<{ userids: string; timeframe: string }>();
   const location = useLocation();
   const groupTitle = location.state?.groupTitle || "Group";
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
@@ -23,7 +23,7 @@ export default function Leaderboard() {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const response = await api.get(`/leaderboard/${userids}`);
+        const response = await api.get(`/leaderboard/${userids}/${timeframe}`);
         setEntries(response.data);
       } catch (err) {
         console.error('Failed to fetch leaderboard');
@@ -32,8 +32,8 @@ export default function Leaderboard() {
       }
     };
 
-  if (userids) fetchLeaderboard();
-  }, [userids]);
+  if (userids && timeframe) fetchLeaderboard();
+  }, [userids, timeframe]);
 
   const medals = ['🥇', '🥈', '🥉'];
 
