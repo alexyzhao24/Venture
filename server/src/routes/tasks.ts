@@ -74,7 +74,8 @@ router.patch('/:id/complete', verifyToken, async (req: any, res: any) => {
             },
             data: {
                 completed: true,
-                completedAt: new Date(Date.now())
+                completedAt: new Date(Date.now()),
+                timesRepeated: { increment: 1 },
             },
         });
 

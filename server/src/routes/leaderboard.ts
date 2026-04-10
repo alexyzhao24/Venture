@@ -18,7 +18,7 @@ router.get('/:userids', async (req, res) => {
     const scores = users.map(user => ({
       id: user.id,
       username: user.username,
-      points: user.completions.reduce((sum, c) => sum + c.task.points, 0),
+      points: user.completions.reduce((sum, c) => sum + (c.task.points * c.task.timesRepeated), 0),
       tasksCompleted: user.completions.length,
     })).sort((a, b) => b.points - a.points);
     res.json(scores);

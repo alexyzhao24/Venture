@@ -16,6 +16,7 @@ interface Task {
   biweekly: boolean;
   monthly: boolean;
   hidden: boolean;
+  timesRepeated: number;
 }
 
 const pointsColor = (points: number) => {

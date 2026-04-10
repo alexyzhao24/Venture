@@ -50,6 +50,7 @@ model Task {
   monthly     Boolean
   completedAt   DateTime? 
   hidden      Boolean
+  timesRepeated Int   @default(0)
 }
 
 model Group {
