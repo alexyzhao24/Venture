@@ -25,16 +25,18 @@ export default function ViewGroups() {
   if(loading) 
     return <CircularProgress />;
 
-  return (
-    <Container maxWidth="md" sx={{ mt: 8 }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2, maxHeight: '80vh', overflow: 'auto' }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h4">Current Groups</Typography>
-          <Fab color="primary" aria-label="view" size="small" onClick={() => navigate('/GroupCreation')}>
-            <ModeIcon />
-          </Fab>
-        </Box>
-            {groups.map(group => (
+   const determineDisplay = () => {
+        if (groups.length === 0) {
+            return (          
+            <Button
+              onClick={() => navigate('/GroupCreation')}
+              fullWidth
+              variant="contained"
+            >
+              Add Group
+            </Button>);
+        }else{
+            return ( groups.map(group => (
                 <Paper 
                     onClick={() => {
                     const ids = group.userids?.length ? group.userids.join(',') : '';
@@ -55,7 +57,20 @@ export default function ViewGroups() {
                 </Box>
 
                 </Paper>
-            ))}
+            )));
+        }
+    };
+
+  return (
+    <Container maxWidth="md" sx={{ mt: 8 }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 2, maxHeight: '80vh', overflow: 'auto' }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+          <Typography variant="h4">Current Groups</Typography>
+          <Fab color="primary" aria-label="view" size="small" onClick={() => navigate('/GroupCreation')}>
+            <ModeIcon />
+          </Fab>
+        </Box>
+        {determineDisplay()}
       </Paper>
     </Container>
   );

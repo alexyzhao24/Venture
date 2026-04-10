@@ -78,14 +78,19 @@ router.patch('/:id/complete', verifyToken, async (req: any, res: any) => {
 
 router.post('/', async (req, res) => {
     try {
-        const { authorId, title, description, points } = req.body; // Data from your frontend
+        const { authorId, title, description, points, once, daily, weekly, biweekly, monthly } = req.body; // Data from your frontend
         
         const newTask = await prisma.task.create({
             data: {
                 authorId,
                 title,
                 description,
-                points: parseInt(points, 10) // Saving it to the DB via Prisma
+                points: parseInt(points, 10), // Saving it to the DB via Prisma
+                once: Boolean(once),
+                daily: Boolean(daily),
+                weekly: Boolean(weekly),
+                biweekly: Boolean(biweekly),
+                monthly: Boolean(monthly)
             }
         });
 

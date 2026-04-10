@@ -43,6 +43,12 @@ model Task {
   completed   Boolean    @default(false)
   authorId    Int?
   completions UserTask[]
+  once        Boolean
+  daily       Boolean
+  weekly      Boolean
+  biweekly    Boolean
+  monthly     Boolean
+  completedAt   DateTime? 
 }
 
 model Group {

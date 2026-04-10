@@ -109,7 +109,6 @@ export default function Tasks() {
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
             <Typography variant="h4">Tasks</Typography>
           </Box>
-          
           {determineDisplay()}
         </Paper>
     </Container>

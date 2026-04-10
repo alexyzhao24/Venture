@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Box, Paper, Typography, TextField, Button } from '@mui/material';
+import { Container, Box, Paper, Typography, TextField, Button, Fab } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
@@ -7,6 +7,12 @@ export default function TaskCreation() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [points, setPoints] = useState('');
+  const [typeofTask, setTypeofTask] = useState('Once');
+  const [once, setTaskonce] = useState(false);
+  const [daily, setTaskdaily] = useState(false);
+  const [weekly, setTaskweekly] = useState(false);
+  const [biweekly, setTaskbiweekly] = useState(false);
+  const [monthly, setTaskmonthly] = useState(false);
   const navigate = useNavigate();
 
   const handleCreateTask = async (e: React.FormEvent) => {
@@ -34,13 +40,23 @@ export default function TaskCreation() {
         authorId: userData.id,
         title,
         description,
-        points: pointsNum
+        points,
+        once: typeofTask === 'Once',
+        daily: typeofTask === 'Daily',
+        weekly: typeofTask === 'Weekly',
+        biweekly: typeofTask === 'Biweekly',
+        monthly: typeofTask === 'Monthly'
       }, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-
+      
+      setTaskonce(false);
+      setTaskdaily(false);
+      setTaskweekly(false);
+      setTaskbiweekly(false);
+      setTaskmonthly(false);
       setTitle('');
       setDescription('');
       setPoints('');
@@ -53,11 +69,38 @@ export default function TaskCreation() {
     }
   };
 
+  const handleTypeofTask = () => {
+    if (typeofTask === 'Once') {
+      setTypeofTask('Daily');
+    } 
+    if (typeofTask === 'Daily'){
+      setTypeofTask('Weekly');
+    }
+    if (typeofTask === 'Weekly'){
+      setTypeofTask('Biweekly');
+    }
+    if (typeofTask === 'Biweekly'){
+      setTypeofTask('Monthly');
+    }
+    if (typeofTask === 'Monthly'){
+      setTypeofTask('Once');
+    }
+  };
+
   return (
     <Container maxWidth="md" sx={{ mt: 8 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2, maxHeight: '80vh', overflow: 'auto' }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h4">Task Creation</Typography>
+          <Button
+            variant="contained"
+            value={typeofTask}
+            sx={{width: '120px', height: '30px'}}
+            onClick={() => handleTypeofTask()}
+            style={{ cursor: 'pointer' }}
+          > 
+            {typeofTask}
+          </Button>
         </Box>
         
         <form onSubmit={handleCreateTask}>
