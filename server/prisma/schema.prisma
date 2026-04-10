@@ -49,6 +49,7 @@ model Task {
   biweekly    Boolean
   monthly     Boolean
   completedAt   DateTime? 
+  hidden      Boolean
 }
 
 model Group {

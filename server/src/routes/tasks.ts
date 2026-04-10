@@ -58,23 +58,99 @@ router.get('/group/:groupId', async (req, res) => {
 router.patch('/:id/complete', verifyToken, async (req: any, res: any) => {
     try {
         const taskId = parseInt(req.params.id);
+        const userId = req.user.id;
+
+        // Create a UserTask record to track completion
+        const userTask = await prisma.userTask.create({
+            data: {
+                userId: userId,
+                taskId: taskId,
+            }
+        });
 
         const updatedTask = await prisma.task.update({
             where: {
                 id: taskId,
             },
             data: {
-                completed: true ,
+                completed: true,
+                completedAt: new Date(Date.now())
             },
         });
 
-        res.json({ message: 'Task updated successfully', updatedTask });
+        res.json({ message: 'Task completed successfully', updatedTask, userTask });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Failed to update task' });
+        res.status(500).json({ message: 'Failed to complete task' });
     }
 });
 
+router.patch('/delete', verifyToken, async (req: any, res: any) => {
+    try {
+        const completedTasks = await prisma.task.findMany({
+            where: { completed: true }
+        });
+
+        const now = new Date();
+
+        for (let task of completedTasks) {
+            if (!task.completedAt) continue;
+
+            const timeElapsed = now.getTime() - task.completedAt.getTime();
+            console.log(`Task ID ${task.id} completed at ${task.completedAt}, time elapsed: ${timeElapsed}ms`);
+            
+            // After 6 hours, delete "once" tasks
+            if (timeElapsed > 6 * 60 * 60 * 1000 && task.once) {
+                await prisma.task.delete({
+                    where: { id: task.id }
+                });
+            }
+
+            // After 6 hours, hide recurring tasks
+            if (timeElapsed > 6 * 60 * 60 * 1000 && (task.daily || task.weekly || task.biweekly || task.monthly)) {
+                await prisma.task.update({
+                    where: { id: task.id },
+                    data: { hidden: true, }
+                });
+            }
+
+            // After 24 hours, show daily tasks
+            if (timeElapsed > 24 * 60 * 60 * 1000 && (task.daily)) {
+                await prisma.task.update({
+                    where: { id: task.id },
+                    data: { hidden: false, completed: false, completedAt: null}
+                });
+            }
+
+            // After 7 days, show weekly tasks
+            if (timeElapsed > 7 * 24 * 60 * 60 * 1000 && (task.weekly)) {
+                await prisma.task.update({
+                    where: { id: task.id },
+                    data: { hidden: false, completed: false, completedAt: null }
+                });
+            }
+
+            // After 14 days, show biweekly tasks           
+            if (timeElapsed > 14 * 24 * 60 * 60 * 1000 && (task.biweekly)) {
+                await prisma.task.update({
+                    where: { id: task.id },
+                    data: { hidden: false, completed: false, completedAt: null }
+                });
+            }
+
+            // After 30 days, show monthly tasks
+            if (timeElapsed > 30 * 24 * 60 * 60 * 1000 && (task.monthly)) {
+                await prisma.task.update({
+                    where: { id: task.id },
+                    data: { hidden: false, completed: false, completedAt: null }
+                });
+            }
+        }
+        res.json({ message: 'Cleanup finished' });
+    } catch (err) {
+        res.status(500).json({ message: 'Cleanup failed' });
+    }
+});
 
 router.post('/', async (req, res) => {
     try {
@@ -90,7 +166,8 @@ router.post('/', async (req, res) => {
                 daily: Boolean(daily),
                 weekly: Boolean(weekly),
                 biweekly: Boolean(biweekly),
-                monthly: Boolean(monthly)
+                monthly: Boolean(monthly),
+                hidden: false,
             }
         });
 

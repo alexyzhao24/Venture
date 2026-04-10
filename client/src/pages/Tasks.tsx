@@ -10,6 +10,12 @@ interface Task {
   description: string | null;
   points: number;
   completed: boolean;
+  once: boolean;
+  daily: boolean;
+  weekly: boolean;
+  biweekly: boolean;
+  monthly: boolean;
+  hidden: boolean;
 }
 
 const pointsColor = (points: number) => {
@@ -27,82 +33,113 @@ export default function Tasks() {
   const { refreshTasks } = useTaskContext();
 
   useEffect(() => {
-      api.get('/tasks')
-          .then(res => setTasks(res.data))
-          .finally(() => setLoading(false));
+    const initializeTasks = async () => {
+      setLoading(true);
+      try {
+        try {
+          await api.patch('/tasks/delete');
+        } catch (e) {
+          console.warn("Cleanup failed, but moving on to fetch:", e);
+        }
+        const res = await api.get('/tasks');
+        setTasks(res.data);
+      } catch (err) {
+        console.error("Initialization failed:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeTasks();
   }, []);
 
   const completeTask = async (taskId: number) => {
-    await api.patch(`/tasks/${taskId}/complete`);
-    setTasks(tasks.map(t => t.id === taskId ? { ...t, completed: true } : t));
-    refreshTasks();
-};
+      await api.patch(`/tasks/${taskId}/complete`);
+      setTasks(tasks.map(t => t.id === taskId ? { ...t, completed: true } : t));
+  };
+
+  const taskBubble = (task: Task) => {
+    if (task.hidden) {
+      return;
+    } else{
+      return (
+      <Paper 
+                key={task.id} 
+                elevation={1} 
+                sx={{ p: 2, mb: 2 }}
+              >
+                <Box 
+                  sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'flex-start', 
+                    gap: 2,
+                    mb: 2
+                  }}
+                >
+                  <Box sx={{ minWidth: 0, flex: 1 , textAlign: 'left'}}>
+                    <Typography 
+                      sx={{ overflowWrap: 'break-word', wordBreak: 'break-word' }} 
+                      fontWeight="bold"
+                    >
+                      {task.title}
+                    </Typography>
+                    
+                    <Typography 
+                      sx={{ overflowWrap: 'break-word', wordBreak: 'break-word' }} 
+                      variant="body2" 
+                      color="text.secondary"
+                    >
+                      {task.description}
+                    </Typography>
+                  </Box>
+                  
+                  <Chip 
+                    label={`${(task.once ? "Once" : task.daily ? "Daily" : task.weekly ? "Weekly" : task.biweekly ? "Biweekly" : task.monthly ? "Monthly" : "Unknown")}`} 
+                    color={pointsColor(task.points)} 
+                    sx={{ flexShrink: 0 }}
+                  />
+
+                  <Chip 
+                    label={`${task.points} pts`} 
+                    color={pointsColor(task.points)} 
+                    sx={{ flexShrink: 0 }}
+                  />
+                </Box>
+
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button
+                    variant={task.completed ? 'outlined' : 'contained'}
+                    disabled={task.completed}
+                    onClick={() => completeTask(task.id)}
+                    size="small"
+                    sx={{ mt: 0, width: '200px' }}
+                  >
+                    {task.completed ? 'Done ✓' : 'Complete'}
+                  </Button> 
+                </Box>
+              </Paper>
+              )}
+  };
 
   const determineDisplay = () => {
-      if (tasks.length === 0) {
-          return (          
+      const visibleTasks = tasks.filter(t => !t.hidden);
+
+      if (visibleTasks.length === 0) {
+        return (
           <Button
             onClick={() => navigate('/TaskCreation')}
             fullWidth
             variant="contained"
           >
             Add Task
-          </Button>);
-      }else{
-          return (tasks.map(task => (
-            <Paper 
-              key={task.id} 
-              elevation={1} 
-              sx={{ p: 2, mb: 2 }}
-            >
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'flex-start', 
-                  gap: 2,
-                  mb: 2
-                }}
-              >
-                <Box sx={{ minWidth: 0, flex: 1 , textAlign: 'left'}}>
-                  <Typography 
-                    sx={{ overflowWrap: 'break-word', wordBreak: 'break-word' }} 
-                    fontWeight="bold"
-                  >
-                    {task.title}
-                  </Typography>
-                  
-                  <Typography 
-                    sx={{ overflowWrap: 'break-word', wordBreak: 'break-word' }} 
-                    variant="body2" 
-                    color="text.secondary"
-                  >
-                    {task.description}
-                  </Typography>
-                </Box>
-
-                <Chip 
-                  label={`${task.points} pts`} 
-                  color={pointsColor(task.points)} 
-                  sx={{ flexShrink: 0 }}
-                />
-              </Box>
-
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Button
-                  variant={task.completed ? 'outlined' : 'contained'}
-                  disabled={task.completed}
-                  onClick={() => completeTask(task.id)}
-                  size="small"
-                  sx={{ mt: 0, width: '200px' }}
-                >
-                  {task.completed ? 'Done ✓' : 'Complete'}
-                </Button> 
-              </Box>
-            </Paper>
-          )))
+          </Button>
+        );
       }
-  };
+
+      // Map only the visible tasks
+      return visibleTasks.map(task => taskBubble(task));
+    };
 
   if (loading) return <CircularProgress />;
   return (
