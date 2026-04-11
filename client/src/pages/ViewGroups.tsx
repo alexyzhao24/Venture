@@ -8,7 +8,7 @@ interface Group {
     id: number;
     title: string;
     userids: number[] | null;
-    allnames: string | null;
+    allnames: string[] | null;
     createdAt: Date;
 }
 
@@ -56,7 +56,7 @@ export default function ViewGroups() {
                 
                 <Box sx={{ textAlign: 'left', width: '100%' }} >
                     <Typography variant="h6" >{"Group: " + group.title}</Typography>
-                    <Typography variant="body2" color="text.secondary">{group.allnames}</Typography>
+                    <Typography variant="body2" color="text.secondary">{group.allnames?.join(', ')}</Typography>
                 </Box>
                 {// LEAVE button, should stop click from bubbling up to the card's onClick
                 }

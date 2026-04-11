@@ -1,4 +1,4 @@
-import React, { use, useState } from 'react';
+import React, { use, useEffect, useRef, useState } from 'react';
 import { Container, Box, Paper, Typography, TextField, Button, Fab } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AddBoxIcon from '@mui/icons-material/AddBox';
@@ -9,15 +9,33 @@ import { Create } from '@mui/icons-material';
 export default function GroupCreation() {
   const [title, setTitle] = useState('New Group');
   const [username, setUsername] = useState('');
-  const [usernamestring, setUsernamestring] = useState('');
+  const [usernamearray, setUsernamearray] = useState<string[]>([]);
   const [usersids, setUsers] = useState<number[]>([]);
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+  const hasFetched = useRef(false);
   
+  useEffect(() => {
+    const addme = async () => {
+      if(usernamearray.length === 0){
+        const me = await api.get('/auth/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setUsers((prevUsers) => [...prevUsers, me.data.id])
+        setUsernamearray((prev) => [... prev, me.data.username]);
+      }
+    }
+    if (hasFetched.current) {
+      return;
+    }
+    hasFetched.current = true;
+    addme();
+  }, []);
+
   const addUser = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      
+
       if (!token) {
         alert("No authentication token found. Not Logged In.");
         return;
@@ -38,7 +56,7 @@ export default function GroupCreation() {
       }
       
       setUsers((prevUsers) => [...prevUsers, userData.id])
-      setUsernamestring((prev) => prev ? `${prev}, ${username}` : username);
+      setUsernamearray((prev) => [...prev, username]);
       setUsername('');
 
     } catch (err) {
@@ -51,7 +69,8 @@ const handleCreateGroup = async (e: React.FormEvent) => {
   e.preventDefault();
   try {
 
-    if(usersids.length === 0) {
+    if(usersids.length === 1) {
+        alert("A group must have at least 2 members.");
         return;
     }
 
@@ -64,19 +83,20 @@ const handleCreateGroup = async (e: React.FormEvent) => {
       headers: { Authorization: `Bearer ${token}` }
     });
     const currentUserId = tokenresponse.data.id;
-    const finalUsersForPayload = [...usersids, currentUserId];
 
+    
     await api.post('/groups', {
-      allnames: usernamestring,
+      creatorId : currentUserId,
+      allnames: usernamearray,
       title,
-      userids: finalUsersForPayload 
+      userids: usersids
     }, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
     setTitle('');
     setUsers([]);
-    setUsernamestring(''); 
+    setUsernamearray([]);
     setUsername('');
 
     navigate('/ViewGroups');
@@ -132,7 +152,7 @@ const handleCreateGroup = async (e: React.FormEvent) => {
             fullWidth
             multiline
             rows={2}
-            value = {usernamestring}
+            value = {usernamearray.join(', ')}
             slotProps={{
                 input: {
                     readOnly: true,

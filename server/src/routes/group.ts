@@ -23,13 +23,14 @@ router.get('/', verifyToken, async (req: any, res: any) => {
 
 router.post('/', async (req, res) => {
     try {
-        const { title, userids, allnames } = req.body; // Data from your frontend
+        const { title, userids, allnames, creatorId } = req.body; // Data from your frontend
         
         const newGroup = await prisma.group.create({
             data: {
                 title,
                 userids, // Assuming you want to create a group with the provided users
                 allnames, // Include the allnames field in the group creation
+                creatorId, // Include the creatorId field in the group creation
                 createdAt: new Date(Date.now()) // Set the creation date to now
             }
         });
@@ -47,16 +48,26 @@ router.patch('/:id/leave', verifyToken, async (req: any, res: any) => {
         const groupId = parseInt(req.params.id);
         const userId = req.user.id;
 
+        const person = await prisma.user.findUnique({ where: { id: userId } });
+        if (!person) return res.status(404).json({ message: 'User not found' });
+
         const group = await prisma.group.findUnique({ where: { id: groupId }, include: { users: true } });
         if (!group) return res.status(404).json({ message: 'Group not found' });
+        
+        const numberOfUsersInGroup = group.userids.length;
 
         await prisma.group.update({
             where: { id: groupId },
             data: {
                 users: { disconnect: { id: userId } },
                 userids: group.userids.filter((id: number) => id !== userId),
+                allnames: group.allnames?.filter((name: string) => name !== person.username)
             }
         });
+
+        if (numberOfUsersInGroup - 1 <= 0) {
+            await prisma.group.delete({ where: { id: groupId } });
+        }
 
         res.json({ message: 'Left group successfully' });
     } catch (err) {
