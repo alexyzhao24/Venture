@@ -40,8 +40,10 @@ export default function ViewGroups() {
             return ( groups.map(group => (
                 <Paper 
                     onClick={() => {
+                    // Join all userIDS into a comma separated string for the URL
                     const ids = group.userids?.length ? group.userids.join(',') : '';
                     if (ids) {
+                      //navigate to leaderboard for this group, passing title as hidden state
                       navigate(`/leaderboard/${ids}/${group.createdAt}`, { 
                         state: { groupTitle: group.title } // This "carries" the title hiddenly
                       });
@@ -56,7 +58,22 @@ export default function ViewGroups() {
                     <Typography variant="h6" >{"Group: " + group.title}</Typography>
                     <Typography variant="body2" color="text.secondary">{group.allnames}</Typography>
                 </Box>
-
+                {// LEAVE button, should stop click from bubbling up to the card's onClick
+                }
+                <Button
+                    size="small"
+                    color="error"
+                    variant="outlined"
+                    onClick={(e) => {
+                        e.stopPropagation(); // prevent navigation to the leaderboard when clicking Leave
+                        api.patch(`/groups/${group.id}/leave`).then(() => {
+                          //remove gruop from the local state to allow UI update quickly
+                          setGroups(groups.filter(g => g.id !== group.id));
+                        });
+                      }}
+                    >
+                      Leave
+                  </Button>
                 </Paper>
             )));
         }

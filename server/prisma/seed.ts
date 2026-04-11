@@ -11,8 +11,9 @@ const adapter = new PrismaPg(pool as any);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
+    await prisma.userTask.deleteMany();
     await prisma.task.deleteMany();
-
+    
     const tasks = [
         { title: 'Walk', description: 'Go for a 30 minute walk', points: 1 },
         { title: 'Laundry', description: 'Do your laundry', points: 1 },

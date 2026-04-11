@@ -40,4 +40,47 @@ router.post('/', async (req, res) => {
     }
 });
 
+
+// User leaves a group
+router.patch('/:id/leave', verifyToken, async (req: any, res: any) => {
+    try {
+        const groupId = parseInt(req.params.id);
+        const userId = req.user.id;
+
+        const group = await prisma.group.findUnique({ where: { id: groupId }, include: { users: true } });
+        if (!group) return res.status(404).json({ message: 'Group not found' });
+
+        await prisma.group.update({
+            where: { id: groupId },
+            data: {
+                users: { disconnect: { id: userId } },
+                userids: group.userids.filter((id: number) => id !== userId),
+            }
+        });
+
+        res.json({ message: 'Left group successfully' });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to leave group' });
+    }
+});
+
+
+// Delete a group (creator only)
+router.delete('/:id', verifyToken, async (req: any, res: any) => {
+    try {
+        const groupId = parseInt(req.params.id);
+        const userId = req.user.id;
+
+        const group = await prisma.group.findUnique({ where: { id: groupId } });
+        if (!group) return res.status(404).json({ message: 'Group not found' });
+        if (group.creatorId !== userId) return res.status(403).json({ message: 'Only the creator can delete this group' });
+
+        await prisma.group.delete({ where: { id: groupId } });
+
+        res.json({ message: 'Group deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to delete group' });
+    }
+});
+
 export default router;
