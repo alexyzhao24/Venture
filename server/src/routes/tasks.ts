@@ -100,11 +100,13 @@ router.patch('/delete', verifyToken, async (req: any, res: any) => {
             const timeElapsed = now.getTime() - task.completedAt.getTime();
             console.log(`Task ID ${task.id} completed at ${task.completedAt}, time elapsed: ${timeElapsed}ms`);
 
-            // After 6 hours, handle once tasks and delete them entirely
-            if (timeElapsed > 6 * 60 * 60 * 1000 && (task.once)) {
-                await prisma.userTask.deleteMany({ where: { taskId: task.id } });
-                await prisma.task.delete({ where: { id: task.id } });
-                continue;
+            // After 6 hours, hide once tasks permanently
+            if (timeElapsed > 6 * 60 * 60 * 1000 && task.once) {
+                await prisma.task.update({
+                where: { id: task.id },
+                data: { hidden: true }
+                });
+            continue;
             }
             
             // After 6 hours, hide repeating tasks
