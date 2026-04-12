@@ -28,14 +28,20 @@ export default function ViewGroups() {
 
    const determineDisplay = () => {
         if (groups.length === 0) {
-            return (          
+            return ( 
+            <Box>  
+            <Typography sx={{ mt: -1, mb: 2}} color="text.secondary">
+            No groups available. Create one to Venture Together!
+            </Typography>     
             <Button
               onClick={() => navigate('/GroupCreation')}
               fullWidth
               variant="contained"
             >
               Add Group
-            </Button>);
+            </Button>
+            </Box>
+          );
         }else{
             return ( groups.map(group => (
                 <Paper 

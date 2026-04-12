@@ -71,7 +71,6 @@ const TaskActionItem = ({
         sx={{ 
           mt: 0, 
           width: '200px',
-          // Allows the Box to detect mouse hover even when button is disabled
           '&.Mui-disabled': { pointerEvents: 'none' } 
         }}
       >
@@ -185,6 +184,10 @@ export default function Tasks() {
 
       if (visibleTasks.length === 0) {
         return (
+          <Box>
+          <Typography sx={{ mt: -2, mb: 2 }} color="text.secondary">
+            No tasks available. Create one to get started!
+          </Typography>
           <Button
             onClick={() => navigate('/TaskCreation')}
             fullWidth
@@ -192,6 +195,7 @@ export default function Tasks() {
           >
             Add Task
           </Button>
+          </Box>
         );
       }
       return visibleTasks.map(task => taskBubble(task));
