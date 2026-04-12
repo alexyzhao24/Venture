@@ -20,11 +20,65 @@ interface Task {
 }
 
 const pointsColor = (points: number) => {
-  if(points ===1) 
+  if(points === 1) 
       return 'success';
-  if(points===2) 
+  if(points === 2) 
       return 'warning';
   return 'error';
+};
+
+
+const TaskActionItem = ({ 
+  task, 
+  completeTask, 
+  removeTask 
+}: { 
+  task: Task; 
+  completeTask: (id: number) => void; 
+  removeTask: (id: number) => void; 
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  if (task.completed && isHovered) {
+    return (
+      <Box 
+        sx={{ display: 'flex', justifyContent: 'center' }}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <Button
+          variant="contained"
+          color="error"
+          size="small"
+          onClick={() => removeTask(task.id)}
+          sx={{ mt: 0, width: '200px' }}
+        >
+          Remove
+        </Button>
+      </Box>
+    );
+  }
+
+  return (
+    <Box 
+      sx={{ display: 'flex', justifyContent: 'center' }}
+      onMouseEnter={() => setIsHovered(true)}
+    >
+      <Button
+        variant={task.completed ? 'outlined' : 'contained'}
+        disabled={task.completed}
+        onClick={() => completeTask(task.id)}
+        size="small"
+        sx={{ 
+          mt: 0, 
+          width: '200px',
+          // Allows the Box to detect mouse hover even when button is disabled
+          '&.Mui-disabled': { pointerEvents: 'none' } 
+        }}
+      >
+        {task.completed ? 'Done ✓' : 'Complete'}
+      </Button>
+    </Box>
+  );
 };
 
 export default function Tasks() {
@@ -59,68 +113,71 @@ export default function Tasks() {
       setTasks(tasks.map(t => t.id === taskId ? { ...t, completed: true } : t));
   };
 
+  const removeTask = async (taskId: number) => {
+      try {
+          await api.patch(`/tasks/${taskId}/hide`); 
+          setTasks(tasks.filter(t => t.id !== taskId));
+      } catch (err) {
+          console.error("Failed to remove task:", err);
+      }
+  };
+
   const taskBubble = (task: Task) => {
     if (task.hidden) {
-      return;
-    } else{
+      return null;
+    } else {
       return (
       <Paper 
-                key={task.id} 
-                elevation={1} 
-                sx={{ p: 2, mb: 2 }}
-              >
-                <Box 
-                  sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'flex-start', 
-                    gap: 2,
-                    mb: 2
-                  }}
-                >
-                  <Box sx={{ minWidth: 0, flex: 1 , textAlign: 'left'}}>
-                    <Typography 
-                      sx={{ overflowWrap: 'break-word', wordBreak: 'break-word' }} 
-                      fontWeight="bold"
-                    >
-                      {task.title}
-                    </Typography>
-                    
-                    <Typography 
-                      sx={{ overflowWrap: 'break-word', wordBreak: 'break-word' }} 
-                      variant="body2" 
-                      color="text.secondary"
-                    >
-                      {task.description}
-                    </Typography>
-                  </Box>
-                  
-                  <Chip 
-                    label={`${(task.once ? "Once" : task.daily ? "Daily" : task.weekly ? "Weekly" : task.biweekly ? "Biweekly" : task.monthly ? "Monthly" : "Unknown")}`} 
-                    color={pointsColor(task.points)} 
-                    sx={{ flexShrink: 0 }}
-                  />
+        key={task.id} 
+        elevation={1} 
+        sx={{ p: 2, mb: 2 }}
+      >
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'flex-start', 
+            gap: 2,
+            mb: 2
+          }}
+        >
+          <Box sx={{ minWidth: 0, flex: 1 , textAlign: 'left'}}>
+            <Typography 
+              sx={{ overflowWrap: 'break-word', wordBreak: 'break-word' }} 
+              fontWeight="bold"
+            >
+              {task.title}
+            </Typography>
+            
+            <Typography 
+              sx={{ overflowWrap: 'break-word', wordBreak: 'break-word' }} 
+              variant="body2" 
+              color="text.secondary"
+            >
+              {task.description}
+            </Typography>
+          </Box>
+          
+          <Chip 
+            label={`${(task.once ? "Once" : task.daily ? "Daily" : task.weekly ? "Weekly" : task.biweekly ? "Biweekly" : task.monthly ? "Monthly" : "Unknown")}`} 
+            color={pointsColor(task.points)} 
+            sx={{ flexShrink: 0 }}
+          />
 
-                  <Chip 
-                    label={`${task.points} pts`} 
-                    color={pointsColor(task.points)} 
-                    sx={{ flexShrink: 0 }}
-                  />
-                </Box>
+          <Chip 
+            label={`${task.points} pts`} 
+            color={pointsColor(task.points)} 
+            sx={{ flexShrink: 0 }}
+          />
+        </Box>
 
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <Button
-                    variant={task.completed ? 'outlined' : 'contained'}
-                    disabled={task.completed}
-                    onClick={() => completeTask(task.id)}
-                    size="small"
-                    sx={{ mt: 0, width: '200px' }}
-                  >
-                    {task.completed ? 'Done ✓' : 'Complete'}
-                  </Button> 
-                </Box>
-              </Paper>
-              )}
+        <TaskActionItem 
+          task={task} 
+          completeTask={completeTask} 
+          removeTask={removeTask} 
+        />
+      </Paper>
+      )}
   };
 
   const determineDisplay = () => {
@@ -137,8 +194,6 @@ export default function Tasks() {
           </Button>
         );
       }
-
-      // Map only the visible tasks
       return visibleTasks.map(task => taskBubble(task));
     };
 

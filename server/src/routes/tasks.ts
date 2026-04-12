@@ -100,49 +100,49 @@ router.patch('/delete', verifyToken, async (req: any, res: any) => {
             const timeElapsed = now.getTime() - task.completedAt.getTime();
             console.log(`Task ID ${task.id} completed at ${task.completedAt}, time elapsed: ${timeElapsed}ms`);
 
-            // After 6 hours, hide once tasks permanently
-            if (timeElapsed > 6 * 60 * 60 * 1000 && task.once) {
-                await prisma.task.update({
-                where: { id: task.id },
-                data: { hidden: true }
-                });
-            continue;
-            }
-            
-            // After 6 hours, hide repeating tasks
-            if (timeElapsed > 6 * 60 * 60 * 1000 && (task.daily || task.weekly || task.biweekly || task.monthly)) {
-                await prisma.task.update({
+            // After 6 hours of completion, hide tasks
+            if (timeElapsed > 6 * 60 * 60 * 1000 && (task.once || task.daily || task.weekly || task.biweekly || task.monthly)) {
+                
+                if (task.daily){
+                    await prisma.task.update({
                     where: { id: task.id },
-                    data: { hidden: true }
+                    data: { hidden: true, permRemove: true}
                 });
+                } else{
+                    await prisma.task.update({
+                        where: { id: task.id },
+                        data: { hidden: true }
+                    });
+                }
             }
 
-            // After 24 hours, show daily tasks
-            if (timeElapsed > 24 * 60 * 60 * 1000 && (task.daily)) {
+
+            // After 24 hours, show daily tasks unless marked as permRemove
+            if (timeElapsed > 24 * 60 * 60 * 1000 && (task.daily) && !task.permRemove) {
                 await prisma.task.update({
                     where: { id: task.id },
                     data: { hidden: false, completed: false, completedAt: null}
                 });
             }
 
-            // After 7 days, show weekly tasks
-            if (timeElapsed > 7 * 24 * 60 * 60 * 1000 && (task.weekly)) {
+            // After 7 days, show weekly tasks unless marked as permRemove
+            if (timeElapsed > 7 * 24 * 60 * 60 * 1000 && (task.weekly) && !task.permRemove) {
                 await prisma.task.update({
                     where: { id: task.id },
                     data: { hidden: false, completed: false, completedAt: null }
                 });
             }
 
-            // After 14 days, show biweekly tasks           
-            if (timeElapsed > 14 * 24 * 60 * 60 * 1000 && (task.biweekly)) {
+            // After 14 days, show biweekly tasks unless marked as permRemove           
+            if (timeElapsed > 14 * 24 * 60 * 60 * 1000 && (task.biweekly) && !task.permRemove) {
                 await prisma.task.update({
                     where: { id: task.id },
                     data: { hidden: false, completed: false, completedAt: null }
                 });
             }
 
-            // After 30 days, show monthly tasks
-            if (timeElapsed > 30 * 24 * 60 * 60 * 1000 && (task.monthly)) {
+            // After 30 days, show monthly tasks unless marked as permRemove
+            if (timeElapsed > 30 * 24 * 60 * 60 * 1000 && (task.monthly) && !task.permRemove) {
                 await prisma.task.update({
                     where: { id: task.id },
                     data: { hidden: false, completed: false, completedAt: null }
@@ -154,6 +154,22 @@ router.patch('/delete', verifyToken, async (req: any, res: any) => {
         res.status(500).json({ message: 'Cleanup failed' });
     }
 });
+
+router.patch('/:taskId/hide', verifyToken, async (req: any, res: any) => {
+    const { taskId } = req.params;
+
+    try {
+        const updatedTask = await prisma.task.update({
+            where: { id: parseInt(taskId, 10) },
+            data: { hidden: true, permRemove: true}
+        });
+
+        res.json({ message: 'Task hidden successfully', updatedTask });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to hide task' });
+    }
+});
+
 
 router.post('/', async (req, res) => {
     try {

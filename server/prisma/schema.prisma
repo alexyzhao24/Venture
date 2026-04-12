@@ -51,6 +51,7 @@ model Task {
   completedAt DateTime?
   hidden      Boolean    @default(false)
   timesRepeated Int      @default(0)
+  permRemove  Boolean    @default(false)
 }
 
 model Group {
