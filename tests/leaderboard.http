@@ -1,0 +1,7 @@
+@baseUrl=http://localhost:5000/api
+
+### Leaderboard for users 1 and 2 from Jan 1, 2026
+GET {{baseUrl}}/leaderboard/1,2/2026-01-01T00:00:00.000Z
+
+### Group task leaderboard by group id
+GET {{baseUrl}}/tasks/group/1

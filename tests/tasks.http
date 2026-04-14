@@ -1,0 +1,48 @@
+@baseUrl=http://localhost:5000/api
+
+### Login user for task calls
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "testPass12!"
+}
+
+@authToken = {{login.response.body.token}}
+
+### Create task
+# @name createTask
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+
+{
+  "authorId": 1,
+  "title": "Do the laundry",
+  "description": "Clean clothes for a clean week!",
+  "points": 1,
+  "once": false,
+  "daily": false,
+  "weekly": true,
+  "biweekly": false,
+  "monthly": false
+}
+
+@taskId = {{createTask.response.body.id}}
+
+### Get tasks
+GET {{baseUrl}}/tasks
+Authorization: Bearer {{authToken}}
+
+### Mark task complete (replace 1 with an existing task id)
+PATCH {{baseUrl}}/tasks/{{taskId}}/complete
+Authorization: Bearer {{authToken}}
+
+### Hide task (replace 1 with an existing task id)
+PATCH {{baseUrl}}/tasks/{{taskId}}/hide
+Authorization: Bearer {{authToken}}
+
+### Run cleanup pass for completed tasks
+PATCH {{baseUrl}}/tasks/delete
+Authorization: Bearer {{authToken}}

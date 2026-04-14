@@ -1,0 +1,49 @@
+@baseUrl=http://localhost:5000/api
+
+### Login as admin
+# @name adminLogin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "adminPass123!"
+}
+
+### Capture admin token
+@adminToken = {{adminLogin.response.body.token}}
+
+### Get all users (admin only)
+GET {{baseUrl}}/admin/users
+Authorization: Bearer {{adminToken}}
+
+### Get all groups (admin only)
+GET {{baseUrl}}/admin/groups
+Authorization: Bearer {{adminToken}}
+
+### Toggle admin status for user id 2
+PATCH {{baseUrl}}/admin/users/2/admin-status
+Authorization: Bearer {{adminToken}}
+
+### Delete user id 3
+DELETE {{baseUrl}}/admin/users/3
+Authorization: Bearer {{adminToken}}
+
+### Delete group id 1
+DELETE {{baseUrl}}/admin/groups/1
+Authorization: Bearer {{adminToken}}
+
+### Non-admin cannot access admin users
+# @name normalLogin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "testPass12!"
+}
+
+@userToken = {{normalLogin.response.body.token}}
+
+GET {{baseUrl}}/admin/users
+Authorization: Bearer {{userToken}}

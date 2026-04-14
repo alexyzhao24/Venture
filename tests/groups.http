@@ -1,0 +1,39 @@
+@baseUrl=http://localhost:5000/api
+
+### Login user for group calls
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "testPass12!"
+}
+
+@authToken = {{login.response.body.token}}
+
+### Create group
+# @name createGroup
+POST {{baseUrl}}/groups
+Content-Type: application/json
+
+{
+  "title": "Sprint Team",
+  "userids": [1],
+  "allnames": ["test"],
+  "creatorId": 1
+}
+
+@groupId = {{createGroup.response.body.id}}
+
+### List my groups
+GET {{baseUrl}}/groups
+Authorization: Bearer {{authToken}}
+
+### Leave group id 1
+PATCH {{baseUrl}}/groups/{{groupId}}/leave
+Authorization: Bearer {{authToken}}
+
+### Delete group id 1 (creator only)
+DELETE {{baseUrl}}/groups/{{groupId}}
+Authorization: Bearer {{authToken}}
