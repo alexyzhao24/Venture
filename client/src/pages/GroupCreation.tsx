@@ -113,7 +113,7 @@ const handleCreateGroup = async (e: React.FormEvent) => {
 
   return (
     <Container maxWidth="md" sx={{ mt: 8 }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2, maxHeight: '80vh', overflow: 'auto' }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h4">Group Creation</Typography>
           <Fab color="primary" aria-label="view" size="small" onClick={() => navigate('/ViewGroups')}>

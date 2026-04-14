@@ -1,7 +1,7 @@
 import { Box, AppBar, Toolbar, Typography, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Avatar, IconButton, BottomNavigation, BottomNavigationAction, Paper, Fab, Menu, MenuItem, Badge, Divider } from '@mui/material';
 import { Dashboard as DashIcon, Checklist as TaskIcon, Logout as LogoutIcon, Add as AddIcon, Group as GroupsIcon, NotificationsNone as BellIcon, AdminPanelSettings as AdminIcon } from '@mui/icons-material';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTaskContext } from '../context/TaskContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -28,6 +28,7 @@ export default function MainLayout() {
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [bellAnchorEl, setBellAnchorEl] = useState<null | HTMLElement>(null);
+    const [pageTransitionClass, setPageTransitionClass] = useState('route-transition-enter');
     const open = Boolean(anchorEl);
     const bellOpen = Boolean(bellAnchorEl);
 
@@ -35,6 +36,12 @@ export default function MainLayout() {
     const handleClose = () => setAnchorEl(null);
     const handleBellClick = (event: React.MouseEvent<HTMLElement>) => setBellAnchorEl(event.currentTarget);
     const handleBellClose = () => setBellAnchorEl(null);
+
+    useEffect(() => {
+        setPageTransitionClass('route-transition-enter');
+        const id = window.setTimeout(() => setPageTransitionClass('route-transition-enter route-transition-enter-active'), 10);
+        return () => window.clearTimeout(id);
+    }, [location.pathname]);
 
     return (
         <Box sx={{ display: 'flex', minHeight: '100vh', overflow: 'hidden' }}>
@@ -91,7 +98,15 @@ export default function MainLayout() {
             </AppBar>
 
             <Paper
-                sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, display: { xs: 'block', sm: 'none' }, bgcolor: 'white' }}
+                sx={{
+                    position: 'fixed',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    display: { xs: 'block', sm: 'none' },
+                    bgcolor: 'white',
+                    zIndex: (theme) => theme.zIndex.appBar + 2,
+                }}
                 elevation={3}
             >
                 <BottomNavigation
@@ -103,7 +118,7 @@ export default function MainLayout() {
                         <BottomNavigationAction key={item.text} label={item.text} value={item.path} icon={item.icon} />
                     ))}
                 </BottomNavigation>
-                <Box sx={{ position: 'fixed', bottom: 85, right: 16 }}>
+                <Box sx={{ position: 'fixed', bottom: 85, right: 16, zIndex: (theme) => theme.zIndex.appBar + 3 }}>
                     <Fab color="primary" aria-label="add" onClick={() => navigate('/TaskCreation')}>
                         <AddIcon />
                     </Fab>
@@ -150,16 +165,31 @@ export default function MainLayout() {
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    height: '100vh',
+                    height: '100dvh',
+                    boxSizing: 'border-box',
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    p: 4,
+                    alignItems: 'stretch',
+                    justifyContent: 'flex-start',
+                    px: { xs: 2, sm: 4 },
+                    pt: { xs: '88px', sm: '96px' },
+                    pb: { xs: '112px', sm: 4 },
                     overflowY: 'auto',
+                    scrollbarGutter: 'stable',
+                    background: 'linear-gradient(120deg, #3d4739 0%, #3d4434 52%, #38403a 100%)',
                 }}
             >
-                <Outlet />
+                <Box
+                    className={pageTransitionClass}
+                    sx={{
+                        width: '100%',
+                        maxWidth: 1100,
+                        mx: 'auto',
+                        my: 'auto',
+                    }}
+                >
+                    <Outlet />
+                </Box>
             </Box>
         </Box>
     );

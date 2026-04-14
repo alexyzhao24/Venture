@@ -30,9 +30,33 @@ function App() {
   }
 
   return (
-    <Container maxWidth="xs">
-      <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Paper elevation={3} sx={{ padding: 4, width: '100%', borderRadius: 2 }}>
+    <>
+    <Box
+      sx={{
+        minHeight: '100dvh',
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#3d4535',
+        px: 2,
+        py: { xs: 3, sm: 4 },
+        boxSizing: 'border-box',
+        overflowY: 'auto',
+      }}
+    >
+      <Container maxWidth={false} disableGutters sx={{ width: '100%' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+          <Paper
+            elevation={3}
+            sx={{
+              p: { xs: 2.5, sm: 4 },
+              width: '100%',
+              maxWidth: 420,
+              borderRadius: 2,
+              boxSizing: 'border-box',
+            }}
+          >
           <Box component="img" src="/src/assets/venture-logo.svg" sx={{ width: '100%', mb: 2 }} />
           <Typography component="h1" variant="h5" align="center" gutterBottom>
             Login
@@ -67,8 +91,10 @@ function App() {
           <Typography sx={{ mt: 2, textAlign: 'center' }}>
                       Don't have an account? <Link to="/register">Register</Link>
           </Typography>
-        </Paper>
-      </Box>
+          </Paper>
+        </Box>
+      </Container>
+    </Box>
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={3500}
@@ -79,7 +105,7 @@ function App() {
           {errorMessage}
         </Alert>
       </Snackbar>
-    </Container>
+    </>
   )
 }
 

@@ -1,4 +1,4 @@
-import { Container, Typography, Button, Paper, Box, CircularProgress } from '@mui/material';
+import { Container, Typography, Paper, Box, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../api/axios'
@@ -26,15 +26,10 @@ export default function Dashboard() {
     fetchUser();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
-  };
-
   if (loading) return <CircularProgress />;
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" sx={{ mt: 8 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h4">Welcome back, {user?.username || "USERNAME"}!</Typography>
