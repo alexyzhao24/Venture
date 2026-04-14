@@ -6,6 +6,7 @@ import authRouter from './routes/authRoutes.js';
 import leaderboardRouter from './routes/leaderboard.js';
 import tasksRouter from './routes/tasks.js';
 import groupRouter from './routes/group.js';
+import adminRouter from './routes/admin.js';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/leaderboard', leaderboardRouter);
 app.use('/api/tasks', tasksRouter);
 app.use('/api/groups', groupRouter);
+app.use('/api/admin', adminRouter);
 
 // Basic health check route
 app.get('/', (req: Request, res: Response) => {

@@ -15,7 +15,8 @@ authRouter.get('/me', verifyToken, async(req: any, res: any)=> {
         select: {
             id: true,
             username: true,
-            email: true
+            email: true,
+            isAdmin: true,
         }
     });
 

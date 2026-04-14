@@ -1,44 +1,28 @@
 import { Box, AppBar, Toolbar, Typography, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Avatar, IconButton, BottomNavigation, BottomNavigationAction, Paper, Fab, Menu, MenuItem, Badge, Divider } from '@mui/material';
-import { Dashboard as DashIcon, Checklist as TaskIcon, Logout as LogoutIcon, Add as AddIcon, Group as GroupsIcon, NotificationsNone as BellIcon } from '@mui/icons-material';
+import { Dashboard as DashIcon, Checklist as TaskIcon, Logout as LogoutIcon, Add as AddIcon, Group as GroupsIcon, NotificationsNone as BellIcon, AdminPanelSettings as AdminIcon } from '@mui/icons-material';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import api from '../api/axios';
+import React, { useState } from 'react';
 import { useTaskContext } from '../context/TaskContext';
+import { useAuth } from '../context/AuthContext';
 
 const drawerWidth = 240;
 
 export default function MainLayout() {
-    const [user, setUser] = useState<{ username: string } | null>(null);
+    const { user, logout } = useAuth();
     const { incompleteTasks } = useTaskContext();
     const navigate = useNavigate();
     const location = useLocation();
-
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const response = await api.get('/auth/me', {
-                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-                });
-                setUser(response.data);
-            } catch (err) {
-                console.error("Session expired or invalid");
-                navigate('/login');
-            }
-        };
-        fetchUser();
-    }, []);
 
     const menuItems = [
         { text: 'Dashboard', icon: <DashIcon />, path: '/dashboard' },
         { text: 'My Tasks', icon: <TaskIcon />, path: '/tasks' },
         { text: 'Venture Together', icon: <GroupsIcon />, path: '/ViewGroups' },
         { text: 'Add Task', icon: <AddIcon />, path: '/TaskCreation' },
+        ...(user?.isAdmin ? [{ text: 'Admin', icon: <AdminIcon />, path: '/admin' }] : []),
     ];
 
     const handleLogout = () => {
-        localStorage.clear();
+        logout();
         navigate('/login');
     };
 
@@ -113,7 +97,7 @@ export default function MainLayout() {
                 <BottomNavigation
                     showLabels
                     value={location.pathname}
-                    onChange={(event, newValue) => navigate(newValue)}
+                    onChange={(_, newValue) => navigate(newValue)}
                 >
                     {menuItems.slice(0, 3).map((item) => (
                         <BottomNavigationAction key={item.text} label={item.text} value={item.path} icon={item.icon} />
