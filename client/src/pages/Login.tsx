@@ -1,13 +1,16 @@
 import React, { useState } from 'react'
-import axios from 'axios'
-import { Container, Box, Paper, Typography, TextField, Button } from '@mui/material'
+import { Container, Box, Paper, Typography, TextField, Button, Snackbar, Alert } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../api/axios'
+import { useAuth } from '../context/AuthContext'
 
 function App() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,11 +20,12 @@ function App() {
         password
       });
 
-      const { token } = response.data;
-      await localStorage.setItem('token', token);
-      navigate('*');
+      const { token, user } = response.data;
+      await login(token, user);
+      navigate(user?.isAdmin ? '/admin' : '/dashboard');
     }catch (err) {
-        alert("Login failed.")
+      setErrorMessage('Login failed.')
+      setSnackbarOpen(true)
     }
   }
 
@@ -65,6 +69,16 @@ function App() {
           </Typography>
         </Paper>
       </Box>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3500}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity="error" variant="filled" sx={{ width: '100%' }}>
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   )
 }

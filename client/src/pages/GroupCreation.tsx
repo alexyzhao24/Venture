@@ -1,19 +1,24 @@
-import React, { use, useEffect, useRef, useState } from 'react';
-import { Container, Box, Paper, Typography, TextField, Button, Fab } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
+import { Container, Box, Paper, Typography, TextField, Button, Fab, Snackbar, Alert } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import AddBoxIcon from '@mui/icons-material/AddBox';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
-import { Create } from '@mui/icons-material';
 
 export default function GroupCreation() {
   const [title, setTitle] = useState('New Group');
   const [username, setUsername] = useState('');
   const [usernamearray, setUsernamearray] = useState<string[]>([]);
   const [usersids, setUsers] = useState<number[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const hasFetched = useRef(false);
+
+  const showError = (message: string) => {
+    setErrorMessage(message);
+    setSnackbarOpen(true);
+  };
   
   useEffect(() => {
     const addme = async () => {
@@ -37,7 +42,7 @@ export default function GroupCreation() {
     try {
 
       if (!token) {
-        alert("No authentication token found. Not Logged In.");
+        showError('No authentication token found. Not logged in.');
         return;
       }
         
@@ -51,7 +56,7 @@ export default function GroupCreation() {
       const isDuplicate = usersids.includes(userData.id);
 
       if (isDuplicate) {
-        alert("User already added to the group.");
+        showError('User already added to the group.');
         return;
       }
       
@@ -61,7 +66,7 @@ export default function GroupCreation() {
 
     } catch (err) {
       console.error(err);
-      alert("Error adding user to group.");
+      showError('Error adding user to group.');
     }
   };
 
@@ -70,12 +75,12 @@ const handleCreateGroup = async (e: React.FormEvent) => {
   try {
 
     if(usersids.length === 1) {
-        alert("A group must have at least 2 members.");
+      showError('A group must have at least 2 members.');
         return;
     }
 
     if (title === '') {
-        alert("Group title cannot be empty.");
+      showError('Group title cannot be empty.');
         return;
     }
 
@@ -171,6 +176,16 @@ const handleCreateGroup = async (e: React.FormEvent) => {
           </Button>
 
       </Paper>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3500}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity="error" variant="filled" sx={{ width: '100%' }}>
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

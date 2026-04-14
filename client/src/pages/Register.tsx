@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import axios from 'axios'
-import { Container, Box, Paper, Typography, TextField, Button } from '@mui/material'
+import { Container, Box, Paper, Typography, TextField, Button, Snackbar, Alert } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../api/axios'
 
@@ -8,12 +7,14 @@ function App() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [email, setEmail] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
   const navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try{
-      const response = await api.post('auth/register', {
+      await api.post('auth/register', {
         username,
         password,
         email
@@ -21,7 +22,8 @@ function App() {
 
       navigate('/login');
     }catch (err) {
-        alert("Registration failed.")
+        setErrorMessage('Registration failed.')
+        setSnackbarOpen(true)
     }
   }
 
@@ -73,6 +75,16 @@ function App() {
           </Typography>
         </Paper>
       </Box>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3500}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity="error" variant="filled" sx={{ width: '100%' }}>
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   )
 }

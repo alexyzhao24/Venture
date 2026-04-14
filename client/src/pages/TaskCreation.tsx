@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Box, Paper, Typography, TextField, Button, Fab } from '@mui/material';
+import { Container, Box, Paper, Typography, TextField, Button, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
@@ -13,7 +13,14 @@ export default function TaskCreation() {
   const [weekly, setTaskweekly] = useState(false);
   const [biweekly, setTaskbiweekly] = useState(false);
   const [monthly, setTaskmonthly] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const navigate = useNavigate();
+
+  const showError = (message: string) => {
+    setErrorMessage(message);
+    setSnackbarOpen(true);
+  };
 
   const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +31,7 @@ export default function TaskCreation() {
       const token = localStorage.getItem('token');
 
       if (!token) {
-        alert("No authentication token found. Please log in.");
+        showError('No authentication token found. Please log in.');
         return;
       }
 
@@ -32,7 +39,7 @@ export default function TaskCreation() {
       const userData = await tokenresponse.data;
 
       if (isNaN(pointsNum) || pointsNum < 0) {
-        alert("Points must be a valid non-negative number.");
+        showError('Points must be a valid non-negative number.');
         return;
       }
 
@@ -65,7 +72,7 @@ export default function TaskCreation() {
 
     } catch (err) {
       console.error(err);
-      alert("Error creating task. Check your connection or login status.");
+      showError('Error creating task. Check your connection or login status.');
     }
   };
 
@@ -142,6 +149,16 @@ export default function TaskCreation() {
           </Button>
         </form>
       </Paper>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3500}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity="error" variant="filled" sx={{ width: '100%' }}>
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }
