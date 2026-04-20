@@ -74,24 +74,12 @@ const handleCreateGroup = async (e: React.FormEvent) => {
   e.preventDefault();
   try {
 
-    if(usersids.length === 1) {
-      showError('A group must have at least 2 members.');
-        return;
-    }
-
     if (title === '') {
       showError('Group title cannot be empty.');
         return;
     }
 
-    const tokenresponse = await api.get('/auth/me', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const currentUserId = tokenresponse.data.id;
-
-    
     await api.post('/groups', {
-      creatorId : currentUserId,
       allnames: usernamearray,
       title,
       userids: usersids
