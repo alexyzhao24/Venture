@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "npx prisma generate && tsc && cp -r src/generated dist/src/generated",
+    "build": "npx prisma generate && tsc && node -e \"require('fs').cpSync('src/generated', 'dist/src/generated', {recursive:true})\"",
     "start": "node dist/src/index.js"
   },
   "keywords": [],
