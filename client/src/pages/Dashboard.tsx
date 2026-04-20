@@ -101,6 +101,7 @@ export default function Dashboard() {
 
         setTasks(fetchedTasks);
 
+        // Build rank summaries by querying each group's leaderboard info.
         const rankSummaries = await Promise.all(
           groups.map(async (group): Promise<GroupRankSummary> => {
             const ids = group.userids?.join(',') ?? '';
@@ -119,6 +120,7 @@ export default function Dashboard() {
             const leaderboardRes = await api.get(`/leaderboard/${ids}/${timeframe}`);
             const entries = leaderboardRes.data as LeaderboardEntry[];
 
+            // Gathers ranks and point tally for the group membership.
             const idx = entries.findIndex((e) => e.id === me.id);
             const meEntry = idx >= 0 ? entries[idx] : null;
 

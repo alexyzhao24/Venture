@@ -38,6 +38,7 @@ export default function MainLayout() {
     const handleBellClose = () => setBellAnchorEl(null);
 
     useEffect(() => {
+        // Re-trigger route animation whenever pathname changes.
         setPageTransitionClass('route-transition-enter');
         const id = window.setTimeout(() => setPageTransitionClass('route-transition-enter route-transition-enter-active'), 10);
         return () => window.clearTimeout(id);
@@ -99,6 +100,7 @@ export default function MainLayout() {
 
             <Paper
                 sx={{
+                    // Mobile-first bottom navigation; desktop uses the left drawer.
                     position: 'fixed',
                     bottom: 0,
                     left: 0,

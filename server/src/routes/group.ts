@@ -1,30 +1,33 @@
 import { Router } from 'express';
+import type { Request, Response } from 'express';
 import prisma from '../lib/prisma.js';
 import { verifyToken } from '../middleware/auth.js';
+import type { AuthenticatedRequest } from '../middleware/auth.js';
 
 const router = Router();
 
-router.get('/', verifyToken, async (req: any, res: any) => {
+router.get('/', verifyToken, async (req: Request, res: Response) => {
     try {
-        const tasks = await prisma.group.findMany({
+        const userId = (req as AuthenticatedRequest).user.id;
+        const groups = await prisma.group.findMany({
             where: {
                 userids: {
-                    has: req.user.id  
+                    has: userId
                 }
             },
             orderBy: { title: 'asc' }
         });
-        res.json(tasks);
+        res.json(groups);
     } catch (err) {
         res.status(500).json({message: 'Internal server error'});
     }
 });
 
 
-router.post('/', verifyToken, async (req: any, res: any) => {
+router.post('/', verifyToken, async (req: Request, res: Response) => {
     try {
         const { title, userids, allnames } = req.body; // Data from your frontend
-        const creatorId = req.user.id;
+        const creatorId = (req as AuthenticatedRequest).user.id;
 
         if (!Array.isArray(userids)) {
             return res.status(400).json({ message: 'userids must be an array' });
@@ -55,10 +58,10 @@ router.post('/', verifyToken, async (req: any, res: any) => {
 });
 
 // Add a member to a group (creator only)
-router.patch('/:id/members/add', verifyToken, async (req: any, res: any) => {
+router.patch('/:id/members/add', verifyToken, async (req: Request, res: Response) => {
     try {
-        const groupId = parseInt(req.params.id);
-        const currentUserId = req.user.id;
+        const groupId = Number.parseInt(String(req.params.id), 10);
+        const currentUserId = (req as AuthenticatedRequest).user.id;
         const { username } = req.body;
 
         if (!username || typeof username !== 'string') {
@@ -93,10 +96,10 @@ router.patch('/:id/members/add', verifyToken, async (req: any, res: any) => {
 });
 
 // Remove a member from a group (creator only)
-router.patch('/:id/members/remove', verifyToken, async (req: any, res: any) => {
+router.patch('/:id/members/remove', verifyToken, async (req: Request, res: Response) => {
     try {
-        const groupId = parseInt(req.params.id);
-        const currentUserId = req.user.id;
+        const groupId = Number.parseInt(String(req.params.id), 10);
+        const currentUserId = (req as AuthenticatedRequest).user.id;
         const { username } = req.body;
 
         if (!username || typeof username !== 'string') {
@@ -138,10 +141,10 @@ router.patch('/:id/members/remove', verifyToken, async (req: any, res: any) => {
 
 
 // User leaves a group
-router.patch('/:id/leave', verifyToken, async (req: any, res: any) => {
+router.patch('/:id/leave', verifyToken, async (req: Request, res: Response) => {
     try {
-        const groupId = parseInt(req.params.id);
-        const userId = req.user.id;
+        const groupId = Number.parseInt(String(req.params.id), 10);
+        const userId = (req as AuthenticatedRequest).user.id;
 
         const person = await prisma.user.findUnique({ where: { id: userId } });
         if (!person) return res.status(404).json({ message: 'User not found' });
@@ -171,10 +174,10 @@ router.patch('/:id/leave', verifyToken, async (req: any, res: any) => {
 
 
 // Delete a group (creator only)
-router.delete('/:id', verifyToken, async (req: any, res: any) => {
+router.delete('/:id', verifyToken, async (req: Request, res: Response) => {
     try {
-        const groupId = parseInt(req.params.id);
-        const userId = req.user.id;
+        const groupId = Number.parseInt(String(req.params.id), 10);
+        const userId = (req as AuthenticatedRequest).user.id;
 
         const group = await prisma.group.findUnique({ where: { id: groupId } });
         if (!group) return res.status(404).json({ message: 'Group not found' });

@@ -3,11 +3,21 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../lib/prisma.js'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'not_secure';
+const getJwtSecret = () => {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+        throw new Error('JWT_SECRET is required');
+    }
+    return secret;
+};
 
 export const register = async (req: Request, res: Response) => {
     try {
         const { username, password, email } = req.body;
+
+        if (!username || !password || !email) {
+            return res.status(400).json({ message: 'Username, email, and password are required' });
+        }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -29,6 +39,10 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Username and password are required' });
+    }
+
     const user = await prisma.user.findUnique({
         where: {
             username: username
@@ -39,7 +53,7 @@ export const login = async (req: Request, res: Response) => {
         return res.status(401).json({ message: 'Invalid username or password' });
     }
 
-    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id }, getJwtSecret(), { expiresIn: '1h' });
 
     res.json({
         message: "Login successful",

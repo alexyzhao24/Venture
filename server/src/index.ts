@@ -1,14 +1,12 @@
+import 'dotenv/config';
 import express from 'express';
 import type { Request, Response } from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import authRouter from './routes/authRoutes.js';
 import leaderboardRouter from './routes/leaderboard.js';
 import tasksRouter from './routes/tasks.js';
 import groupRouter from './routes/group.js';
 import adminRouter from './routes/admin.js';
-
-dotenv.config();
 
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;

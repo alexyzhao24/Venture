@@ -1,9 +1,22 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'not_secure';
+export interface AuthenticatedUser {
+  id: number;
+  iat?: number;
+  exp?: number;
+}
 
-export const verifyToken = (req: any, res: Response, next: NextFunction) => {
+export interface AuthenticatedRequest extends Request {
+  user: AuthenticatedUser;
+}
+
+export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    return res.status(500).json({ message: 'Server misconfiguration: JWT_SECRET is missing' });
+  }
+
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -12,8 +25,20 @@ export const verifyToken = (req: any, res: Response, next: NextFunction) => {
   }
 
   try {
-    const verified = jwt.verify(token, JWT_SECRET);
-    req.user = verified;
+    const verified = jwt.verify(token, jwtSecret);
+    if (typeof verified !== 'object' || verified === null || !('id' in verified)) {
+      return res.status(403).json({ message: 'Invalid Token' });
+    }
+
+    const userId = Number((verified as { id: unknown }).id);
+    if (Number.isNaN(userId)) {
+      return res.status(403).json({ message: 'Invalid Token' });
+    }
+
+    (req as AuthenticatedRequest).user = {
+      ...(verified as Record<string, unknown>),
+      id: userId,
+    } as AuthenticatedUser;
     next();
   } catch (err) {
     res.status(403).json({ message: "Invalid Token" });

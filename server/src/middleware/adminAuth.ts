@@ -1,14 +1,17 @@
-import type { Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import prisma from '../lib/prisma.js';
+import type { AuthenticatedRequest } from './auth.js';
 
-export const verifyAdmin = async (req: any, res: Response, next: NextFunction) => {
-    if (!req.user) {
+export const verifyAdmin = async (req: Request, res: Response, next: NextFunction) => {
+    const userId = (req as AuthenticatedRequest).user?.id;
+
+    if (!userId) {
         return res.status(401).json({ message: "Access Denied." });
     }
 
     const user = await prisma.user.findUnique({
         where: {
-            id: req.user.id
+            id: userId
         },
     });
 

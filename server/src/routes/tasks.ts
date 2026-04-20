@@ -1,15 +1,18 @@
 import { Router } from 'express';
+import type { Request, Response } from 'express';
 import prisma from '../lib/prisma.js';
 import { verifyToken } from '../middleware/auth.js';
+import type { AuthenticatedRequest } from '../middleware/auth.js';
 
 const router = Router();
 
-router.get('/', verifyToken, async (req: any, res: any) => {
+router.get('/', verifyToken, async (req: Request, res: Response) => {
     try {
+        const userId = (req as AuthenticatedRequest).user.id;
         const tasks = await prisma.task.findMany({
             where: { 
                 OR: [
-                    { authorId: req.user.id },
+                    { authorId: userId },
                     { authorId: null }
                 ]
             },
@@ -21,9 +24,9 @@ router.get('/', verifyToken, async (req: any, res: any) => {
     }
 });
 
-router.get('/group/:groupId', async (req, res) => {
+router.get('/group/:groupId', async (req: Request, res: Response) => {
     try {
-        const groupId = parseInt(req.params.groupId);
+        const groupId = Number.parseInt(String(req.params.groupId), 10);
 
         const group = await prisma.group.findUnique({
             where: { id: groupId },
@@ -55,10 +58,10 @@ router.get('/group/:groupId', async (req, res) => {
     }
 });
 
-router.patch('/:id/complete', verifyToken, async (req: any, res: any) => {
+router.patch('/:id/complete', verifyToken, async (req: Request, res: Response) => {
     try {
-        const taskId = parseInt(req.params.id);
-        const userId = req.user.id;
+        const taskId = Number.parseInt(String(req.params.id), 10);
+        const userId = (req as AuthenticatedRequest).user.id;
 
         // Create a UserTask record to track completion
         const userTask = await prisma.userTask.create({
@@ -86,7 +89,7 @@ router.patch('/:id/complete', verifyToken, async (req: any, res: any) => {
     }
 });
 
-router.patch('/delete', verifyToken, async (req: any, res: any) => {
+router.patch('/delete', verifyToken, async (_req: Request, res: Response) => {
     try {
         const completedTasks = await prisma.task.findMany({
             where: { completed: true }
@@ -155,12 +158,16 @@ router.patch('/delete', verifyToken, async (req: any, res: any) => {
     }
 });
 
-router.patch('/:taskId/hide', verifyToken, async (req: any, res: any) => {
-    const { taskId } = req.params;
+router.patch('/:taskId/hide', verifyToken, async (req: Request, res: Response) => {
+    const taskId = Number.parseInt(String(req.params.taskId), 10);
+
+    if (Number.isNaN(taskId)) {
+        return res.status(400).json({ message: 'Invalid task id' });
+    }
 
     try {
         const updatedTask = await prisma.task.update({
-            where: { id: parseInt(taskId, 10) },
+            where: { id: taskId },
             data: { hidden: true, permRemove: true}
         });
 
@@ -171,9 +178,10 @@ router.patch('/:taskId/hide', verifyToken, async (req: any, res: any) => {
 });
 
 
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, async (req: Request, res: Response) => {
     try {
-        const { authorId, title, description, points, once, daily, weekly, biweekly, monthly } = req.body; // Data from your frontend
+        const { title, description, points, once, daily, weekly, biweekly, monthly } = req.body; // Data from your frontend
+        const authorId = (req as AuthenticatedRequest).user.id;
         
         const newTask = await prisma.task.create({
             data: {

@@ -1,16 +1,19 @@
 import { Router } from 'express';
+import type { Request, Response } from 'express';
 import { verifyToken } from '../middleware/auth.js';
 import { register, login } from '../controllers/authController.js';
 import prisma from '../lib/prisma.js'
+import type { AuthenticatedRequest } from '../middleware/auth.js';
 
 export const authRouter = Router();
 
 authRouter.post('/register', register);
 authRouter.post('/login', login);
-authRouter.get('/me', verifyToken, async(req: any, res: any)=> {
+authRouter.get('/me', verifyToken, async(req: Request, res: Response)=> {
+    const userId = (req as AuthenticatedRequest).user.id;
     const user = await prisma.user.findUnique({
         where: {
-            id: req.user.id
+            id: userId
         },
         select: {
             id: true,
@@ -25,8 +28,12 @@ authRouter.get('/me', verifyToken, async(req: any, res: any)=> {
     res.json(user);
 })
 
-authRouter.get('/user/:username', verifyToken, async (req: any, res: any) => {
-    const { username } = req.params;
+authRouter.get('/user/:username', verifyToken, async (req: Request, res: Response) => {
+    const username = String(req.params.username ?? '').trim();
+
+    if (!username) {
+        return res.status(400).json({ message: 'Username is required' });
+    }
 
     try {
         const user = await prisma.user.findUnique({
@@ -50,8 +57,12 @@ authRouter.get('/user/:username', verifyToken, async (req: any, res: any) => {
     }
 })
 
-authRouter.get('/user/:id', verifyToken, async (req: any, res: any) => {
-    const { id } = req.params;
+authRouter.get('/user/id/:id', verifyToken, async (req: Request, res: Response) => {
+    const id = Number.parseInt(String(req.params.id), 10);
+
+    if (Number.isNaN(id)) {
+        return res.status(400).json({ message: 'Invalid user id' });
+    }
 
     try {
         const user = await prisma.user.findUnique({

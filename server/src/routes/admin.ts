@@ -1,11 +1,13 @@
 import { Router } from 'express';
+import type { Request, Response } from 'express';
 import { verifyToken } from '../middleware/auth.js';
 import { verifyAdmin } from '../middleware/adminAuth.js';
 import prisma from '../lib/prisma.js';
+import type { AuthenticatedRequest } from '../middleware/auth.js';
 
 const router = Router();
 
-router.get('/users', verifyToken, verifyAdmin, async (req: any, res: any) => {
+router.get('/users', verifyToken, verifyAdmin, async (_req: Request, res: Response) => {
     try {
         const users = await prisma.user.findMany({
             select: {
@@ -22,7 +24,7 @@ router.get('/users', verifyToken, verifyAdmin, async (req: any, res: any) => {
     }
 });
 
-router.get('/groups', verifyToken, verifyAdmin, async (_req: any, res: any) => {
+router.get('/groups', verifyToken, verifyAdmin, async (_req: Request, res: Response) => {
     try {
         const groups = await prisma.group.findMany({
             orderBy: { id: 'desc' },
@@ -42,9 +44,9 @@ router.get('/groups', verifyToken, verifyAdmin, async (_req: any, res: any) => {
     }
 });
 
-router.delete('/groups/:id', verifyToken, verifyAdmin, async (req: any, res: any) => {
+router.delete('/groups/:id', verifyToken, verifyAdmin, async (req: Request, res: Response) => {
     try {
-        const groupId = Number.parseInt(req.params.id, 10);
+        const groupId = Number.parseInt(String(req.params.id), 10);
 
         if (Number.isNaN(groupId)) {
             return res.status(400).json({ message: 'Invalid group id' });
@@ -67,15 +69,15 @@ router.delete('/groups/:id', verifyToken, verifyAdmin, async (req: any, res: any
     }
 });
 
-router.delete('/users/:id', verifyToken, verifyAdmin, async (req: any, res: any) => {
+router.delete('/users/:id', verifyToken, verifyAdmin, async (req: Request, res: Response) => {
     try {
-        const userId = Number.parseInt(req.params.id, 10);
+        const userId = Number.parseInt(String(req.params.id), 10);
 
         if (Number.isNaN(userId)) {
             return res.status(400).json({ message: 'Invalid user id' });
         }
 
-        if (userId === req.user.id) {
+        if (userId === (req as AuthenticatedRequest).user.id) {
             return res.status(400).json({ message: "Cannot delete self" });
         }
 
@@ -97,6 +99,7 @@ router.delete('/users/:id', verifyToken, verifyAdmin, async (req: any, res: any)
             authoredTasksUnassigned: 0,
         };
 
+        // Keep user deletion atomic to avoid leaving dangling relations.
         await prisma.$transaction(async (tx) => {
             const clearedCreatorGroups = await tx.group.updateMany({
                 where: { creatorId: userId },
@@ -166,12 +169,16 @@ router.delete('/users/:id', verifyToken, verifyAdmin, async (req: any, res: any)
     }
 });
 
-router.patch('/users/:id/admin-status', verifyToken, verifyAdmin, async (req: any, res: any) => {
+router.patch('/users/:id/admin-status', verifyToken, verifyAdmin, async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
+        const id = Number.parseInt(String(req.params.id), 10);
+
+        if (Number.isNaN(id)) {
+            return res.status(400).json({ message: 'Invalid user id' });
+        }
 
         const user = await prisma.user.findUnique({
-            where: { id: parseInt(id) }
+            where: { id }
         });
 
         if (!user) {
@@ -179,7 +186,7 @@ router.patch('/users/:id/admin-status', verifyToken, verifyAdmin, async (req: an
         }
 
         const updated = await prisma.user.update({
-            where: { id: parseInt(id) },
+            where: { id },
             data: { isAdmin: !user.isAdmin },
             select: { id: true, username: true, isAdmin: true }
         });
