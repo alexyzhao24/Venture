@@ -1,5 +1,5 @@
-![Venture Logo](./client/src/assets/venture-logo.svg#gh-light-mode-only)
-![Venture Logo](./client/src/assets/venture-logo-dark.svg#gh-dark-mode-only)
+![Venture Logo](./client/public/venture-logo.svg#gh-light-mode-only)
+![Venture Logo](./client/public/venture-logo-dark.svg#gh-dark-mode-only)
 
 ![Screenshot of Venture](./assets/screenshot.png)
 
