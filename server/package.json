@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "build": "npx prisma generate && tsc && cp -r src/generated dist/src/generated",
+    "start": "node dist/src/index.js"
   },
   "keywords": [],
   "author": "",

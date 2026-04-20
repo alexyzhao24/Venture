@@ -47,7 +47,7 @@ export default function MainLayout() {
         <Box sx={{ display: 'flex', minHeight: '100vh', overflow: 'hidden' }}>
             <AppBar position="fixed" elevation={0} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, bgcolor: 'white', color: 'text.primary' }}>
                 <Toolbar sx={{ justifyContent: 'space-between' }}>
-                    <Box component="img" src="/src/assets/venture-logo.svg" sx={{ height: '80px' }} onClick={() => navigate('/dashboard')} />
+                    <Box component="img" src="/venture-logo.svg" sx={{ height: '80px' }} onClick={() => navigate('/dashboard')} />
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <IconButton onClick={handleBellClick}>
                             <Badge badgeContent={incompleteTasks.length} color="error">

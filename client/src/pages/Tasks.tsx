@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Container, Paper, Typography, Box, Button, Chip, CircularProgress, Stack } from '@mui/material';
+import { Container, Paper, Typography, Box, Button, Chip, CircularProgress } from '@mui/material';
 import api from '../api/axios';
 import { useNavigate } from 'react-router-dom';
-import { useTaskContext } from '../context/TaskContext';
 
 interface Task {
   id: number;
@@ -84,7 +83,6 @@ export default function Tasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { refreshTasks } = useTaskContext();
 
   useEffect(() => {
     const initializeTasks = async () => {

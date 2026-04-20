@@ -57,7 +57,7 @@ function App() {
               boxSizing: 'border-box',
             }}
           >
-          <Box component="img" src="/src/assets/venture-logo.svg" sx={{ width: '100%', mb: 2 }} />
+          <Box component="img" src="/venture-logo.svg" sx={{ width: '100%', mb: 2 }} />
           <Typography component="h1" variant="h5" align="center" gutterBottom>
             Login
           </Typography>

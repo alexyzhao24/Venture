@@ -53,15 +53,6 @@ interface GroupRankSummary {
   points: number;
 }
 
-function recurrenceLabel(task: Task): string {
-  if (task.daily) return 'Daily';
-  if (task.weekly) return 'Weekly';
-  if (task.biweekly) return 'Biweekly';
-  if (task.monthly) return 'Monthly';
-  if (task.once) return 'Once';
-  return 'Task';
-}
-
 function nextDueDate(task: Task): Date | null {
   if (task.once) return task.completed ? null : new Date();
 

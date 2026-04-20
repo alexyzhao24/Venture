@@ -8,11 +8,6 @@ export default function TaskCreation() {
   const [description, setDescription] = useState('');
   const [points, setPoints] = useState('');
   const [typeofTask, setTypeofTask] = useState('Once');
-  const [once, setTaskonce] = useState(false);
-  const [daily, setTaskdaily] = useState(false);
-  const [weekly, setTaskweekly] = useState(false);
-  const [biweekly, setTaskbiweekly] = useState(false);
-  const [monthly, setTaskmonthly] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const navigate = useNavigate();
@@ -59,11 +54,6 @@ export default function TaskCreation() {
         }
       });
       
-      setTaskonce(false);
-      setTaskdaily(false);
-      setTaskweekly(false);
-      setTaskbiweekly(false);
-      setTaskmonthly(false);
       setTitle('');
       setDescription('');
       setPoints('');
